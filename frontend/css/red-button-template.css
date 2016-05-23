@@ -1,0 +1,27 @@
+#hbbtv_app {
+    position: absolute;
+    width:1280px;
+    height:720px;
+    margin:0;
+    overflow:hidden;
+    font-family:Tiresias,Arial,Helvetica,sans-serif;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+#safe_area {
+    position: absolute;
+    top:5%;
+    left: 5%;
+    width:90%;
+    height:90%;
+    margin:0;
+}
+
+#redButtonIMG {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+    display: none;
+}

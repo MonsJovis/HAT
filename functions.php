@@ -1,9 +1,9 @@
 <?php
-
+load_theme_textdomain('text_domain');
 /*
-Theme Name: 	hat
-Theme URI: 		http://hat.fokus.fraunhofer.de/wordpress/
-Description: 	HbbTV Application Toolkit
+Theme Name: 	MPAT
+Theme URI: 		http://mpat.fokus.fraunhofer.de/wordpress/
+Description: 	Multi-platform Application Toolkit
 Version: 		0.1
 Author: 		Fraunhofer Fokus
 Author URI: 	http://www.fokus.fraunhofer.de/go/fame
@@ -12,1040 +12,945 @@ Tags: 			hbbtv
 
 /* Required external files */
 
-require_once( 'external/hat-utilities.php' );
-include_once 'hat-button-control.php';
+require_once('external/mpat-utilities.php');
+include_once 'mpat-button-control.php';
+include_once 'mpat-shortcodes.php';
+include_once 'mpat-metaboxes.php';
+
+
+//======================================================================
+// INITIALIZE
+//======================================================================
 
 /* Theme specific settings */
 add_theme_support('post-thumbnails');
 
-// register_nav_menus(array('primary' => 'Primary Navigation'));
+//-----------------------------------------------------
+//  Actions and Filters
+//-----------------------------------------------------
 
-/* Scripts */
-function hat_admin_scripts_init() {
-	wp_register_script('jquery-1.11', get_template_directory_uri().'/js/general/jquery-1.11.3.js',false);
-	wp_enqueue_script('jquery-1.11');
+//Enqueue global scripts (frontend and backend)
+//add_filter('wp_default_scripts', 'mpat_edit_default_scripts');
+//Enqueue admin scripts (backend)
+add_action('admin_enqueue_scripts', 'mpat_admin_scripts_init');
 
-	wp_enqueue_script('media-upload');
-	wp_enqueue_script('thickbox');
-	wp_register_script('hat-media-uploader', get_template_directory_uri().'/js/media-uploader.js', array('jquery-1.11','media-upload','thickbox'));
-	wp_enqueue_script('hat-media-uploader');
+//Enqueue user scripts (frontend)
+add_action('wp_enqueue_scripts', 'mpat_enqueue_frontend_scripts');
 
-	wp_enqueue_style('thickbox');
-}
+add_action('init', 'mpat_register_menus');
+add_action('init', 'mpat_create_post_types');
+add_action('init', 'mpat_register_shortcodes');
 
-function hat_enqueue_customizer_admin_scripts() {
-	wp_register_script( 'customizer-admin', get_template_directory_uri() . '/js/customizer-admin.js', array( 'jquery-1.11' ), NULL, true );
-	wp_enqueue_script( 'customizer-admin' );
-}
-
-function hat_enqueue_customizer_controls_styles() {
-
-  wp_register_style( 'hat-customizer-controls', get_template_directory_uri() . '/css/customizer-controls.css', NULL, NULL, 'all' );
-  wp_enqueue_style( 'hat-customizer-controls' );
-
-}
-add_action ("init" , "create_hat_post_types");
+//disable emojis
+remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+remove_action( 'wp_print_styles', 'print_emoji_styles' );
+remove_action( 'admin_print_styles', 'print_emoji_styles' );
+remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
 
 
-function create_hat_post_types() {
-	register_post_type(
-		'hat_gallery_item',
-		array(
-			'labels' => array(
-				'name' => __( 'Gallery Items' ),
-				'singular_name' => __( 'Gallery Item' ),
-				'add_new_item' => __('Create a new Gallery Item')
-			),
-			'public' => true,
-			'has_archive' => false,
-			'menu_icon' => 'dashicons-format-gallery',
-			'taxonomies' => array('post_tag')
-		)
-	);
-	register_post_type(
-		'hat_popup',
-		array(
-			'labels' => array(
-				'name' => __( 'Popups' ),
-				'singular_name' => __( 'Popup' ),
-				'add_new_item' => __('Create a new Popup')
-			),
-			'public' => true,
-			'has_archive' => false,
-			'menu_icon' => 'dashicons-category',
-		)
-	);
-	register_post_type(
-		'hat_function',
-		array(
-			'labels' => array(
-				'name' => __( 'Functions' ),
-				'singular_name' => __( 'Function' ),
-				'add_new_item' => __('Create a new Function')
-			),
-			'public' => true,
-			'has_archive' => false,
-			'menu_icon' => 'dashicons-media-code',
-		)
-	);
-	remove_post_type_support('hat_function', 'editor');
-	remove_post_type_support('hat_gallery_item', 'editor');
-	remove_post_type_support('page', 'editor');
-	register_taxonomy_for_object_type('post_tag', 'page');
-}
+//Register scripts for customizer
+add_action('customize_register', 'mpat_add_customizer_custom_controls');
+add_action('customize_register', 'mpat_customizer_register');
+add_action('customize_controls_enqueue_scripts', 'mpat_enqueue_customizer_admin_scripts');
 
-/* Actions and Filters */
-add_action('admin_enqueue_scripts', 'hat_admin_scripts_init');
+add_action('admin_menu', 'mpat_button_control_menu');
 
-add_action( 'admin_enqueue_scripts', 'hat_enqueue_customizer_admin_scripts' );
-
-add_action( 'customize_register', 'hat_add_customizer_custom_controls' );
-
-add_action( 'customize_controls_print_styles', 'hat_enqueue_customizer_controls_styles' );
-
-add_action( 'customize_register', 'hat_customizer_register');
-
-add_action( 'init', 'register_HAT_menu');
-
-add_action('wp_head', 'hat_customizer_css');
-
-add_action( 'after_setup_theme', 'remove_feeds' );
-
-add_filter( 'body_class', array( 'Hat_Utilities', 'add_slug_to_body_class'));
-
-remove_action('wp_head', 'feed_links_extra', 3 );
-remove_action('wp_head', 'feed_links', 2 );
-
+add_action('wp_head', 'mpat_customizer_css');
+remove_action('wp_head', 'feed_links_extra', 3);
+remove_action('wp_head', 'feed_links', 2);
 remove_action('wp_head', 'wp_generator');
 remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 remove_action('wp_head', 'wp_msapplication_TileImage');
+remove_action('wp_head', 'feed_links_extra', 3);
+remove_action('wp_head', 'feed_links', 2);
 
-
-
-/*function disable_emojis() {
-	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
-	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
-	remove_action( 'wp_print_styles', 'print_emoji_styles' );
-	remove_action( 'admin_print_styles', 'print_emoji_styles' );	
-	remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
-	remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );	
-	remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
-	add_filter( 'tiny_mce_plugins', 'disable_emojis_tinymce' );
-}
-add_action( 'init', 'disable_emojis' );
-
-
-add_filter( 'mime_type_edit_pre', 'filter_function_name', 10, 2 );
-*/
+add_filter('body_class', array('Mpat_Utilities', 'add_slug_to_body_class'));
 
 // Remove Canonical Link Added By Yoast WordPress SEO Plugin
-function at_remove_dup_canonical_link() {
-	return false;
+add_filter('wpseo_canonical', function () {
+    return false;
+});
+
+add_filter('default_page_template_title', function () {
+    return __('Full Page');
+});
+
+//-----------------------------------------------------
+//  Enqueue Scripts and Styles
+//-----------------------------------------------------
+
+//Global scripts
+/*function mpat_edit_default_scripts(&$scripts){
+        $scripts->remove( 'jquery');
+        $scripts->add( 'jquery', false, array( 'jquery-core' ), '1.10.2' );
+}*/
+
+//Admin scripts
+function mpat_admin_scripts_init($hook)
+{
+    add_thickbox();
+
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('jquery-ui-core',false,array('jquery'));
+    wp_enqueue_script('jquery-ui-sortable',false,array('jquery-ui-core'));
+
+    wp_enqueue_style('jquery-ui', get_template_directory_uri() . '/backend/css/jquery-ui.min.css');
+    wp_enqueue_style('jquery-ui-theme', get_template_directory_uri() . '/backend/css/jquery-ui.theme.css');
+
+    wp_register_script('mpat-media-uploader', get_template_directory_uri() . '/backend/js/media-uploader.js', array('jquery', 'media-upload', 'thickbox'));
+    wp_enqueue_script('mpat-media-uploader');
+
+    wp_enqueue_style('thickbox');
+
+    //Enqueue page specific scripts
+    switch ($hook) {
+        case 'toplevel_page_mpat_button_control':
+            wp_enqueue_script('mpat-button-control-script', get_template_directory_uri() . '/backend/js/mpat-button-control.js', array('jquery'));
+            wp_enqueue_style('mpat-button-control-style', get_template_directory_uri() . '/backend/css/mpat-button-control-style.css');
+            break;
+        case 'widgets.php':
+
+    }
 }
-add_filter( 'wpseo_canonical', 'at_remove_dup_canonical_link' );
+
+//Frontend scripts
+function mpat_enqueue_frontend_scripts()
+{
+    global $post;
+    global $page_content_key;;
+    if ($post!=null){
+        $postMeta = get_post_meta($post->ID,$page_content_key,true);
+        if ($postMeta==='') $postMeta = array();
+    }
+
+    //Javascripts
+
+    //Libraries
+    wp_register_script('hbbtvlib', get_template_directory_uri() . '/frontend/js/general/hbbtvlib.js');
+
+    wp_register_script('keycodes', get_template_directory_uri() . '/frontend/js/general/keycodes.js');
+
+    wp_register_script('mpat-navigation', get_template_directory_uri() . '/frontend/js/mpat-navigation.js', array('hbbtvlib', 'keycodes', 'jquery'));
+
+    //Final Scripts
+
+    wp_enqueue_script('nav-menu', get_template_directory_uri() . '/frontend/js/nav-menu.js', array('mpat-navigation'));
+
+    wp_enqueue_script('json2', get_template_directory_uri() . '/frontend/js/scribble/json2.js', array('jquery'));
+
+    wp_enqueue_script('social', get_template_directory_uri() . '/frontend/js/modules/social.js', array('jquery'));
+
+    wp_enqueue_script('jquery-timeago', get_template_directory_uri() . '/frontend/js/scribble/jquery.timeago.js', array('jquery'));
+
+    //template specific styles and scripts
+    if (is_page_template('page-templates/template-media-gallery.php')) {
+
+        wp_enqueue_script('mpat-gallery', get_template_directory_uri() . '/frontend/js/gallery-template.js', array('mpat-navigation'));
+
+        wp_enqueue_script('mpat-api', get_template_directory_uri() . '/frontend/js/api.js', array('jquery'));
+
+        wp_enqueue_style('mpat-frontend-style', get_template_directory_uri() . '/style.css');
+
+    } else if (is_page_template('page-templates/template-grid.php')){
+
+        wp_enqueue_script('mpat-grid', get_template_directory_uri() . '/frontend/js/grid-template.js', array('mpat-navigation'));
+
+        wp_enqueue_style('mpat-grid', get_template_directory_uri() . '/frontend/css/grid-template.css');
+
+    } else if (is_page_template('page-templates/template-single-media.php')){
+
+        wp_enqueue_script('mpat-single-media', get_template_directory_uri() . '/frontend/js/single-media-template.js', array('mpat-navigation'));
+
+        wp_enqueue_style('mpat-single-media', get_template_directory_uri() . '/frontend/css/single-media-template.css');
+
+        wp_enqueue_style('mpat-frontend-style', get_template_directory_uri() . '/style.css');
+        
+    } else if (is_page_template('page-templates/template-red-button.php')){
+
+        wp_enqueue_script('mpat-red-button', get_template_directory_uri() . '/frontend/js/red-button-template.js', array('mpat-navigation'));
+        wp_enqueue_style('mpat-red-button', get_template_directory_uri() . '/frontend/css/red-button-template.css');
 
 
+    } else {
 
-function hat_content_type( $mime_type, $post_id ) {
-  header('Content-type: application/vnd.hbbtv.xhtml+xml; charset=utf-8');
-  // Process content here
-  return $mime_type;
+        wp_enqueue_script('mpat-column-navigation', get_template_directory_uri() . '/frontend/js/column-template.js', array('mpat-navigation'));
+
+        wp_enqueue_style('mpat-frontend-style', get_template_directory_uri() . '/style.css');
+
+    }
+
+    $contains_content_type = function($postMeta,$contenttype){
+        if (!isset($postMeta)) $postMeta = array();
+        foreach ($postMeta as $box){
+            if (isset($box['contenttype']) && $box['contenttype']===$contenttype) {
+                return $box;
+            }
+        }
+        return false;
+    };
+
+    //contentbox specific scripts
+
+    $box = $contains_content_type($postMeta,'360');
+    if ($box!==false){
+        add_action('wp_head',function() use ($box){
+            ?><script type="text/javascript">
+                var SRV_BASE = "<?php echo $box['data']['server_url'];?>";
+                var LAUNCH_SERVER_URL = SRV_BASE+"/streamer360/launch_video3.php";
+                var META_DATA_URL = SRV_BASE+"/streamer360/meta.php";
+                var META_PUT_URL = SRV_BASE+"/streamer360/put_meta.php";
+            </script><?php
+        });
+        wp_enqueue_script('util360', get_template_directory_uri() . '/frontend/js/modules/360/util.js', array('jquery'));
+        wp_enqueue_script('video360', get_template_directory_uri() . '/frontend/js/modules/360/video.js', array('jquery'));
+        wp_enqueue_script('controller360', get_template_directory_uri() . '/frontend/js/modules/360/controller.js', array('jquery'));
+    }
+
+}
+
+function mpat_enqueue_customizer_admin_scripts()
+{
+    wp_enqueue_script('customizer-admin', get_template_directory_uri() . '/backend/js/customizer-admin.js', array('jquery'),false,true);
+    wp_enqueue_style('mpat-customizer-controls', get_template_directory_uri() . '/backend/css/customizer-controls.css');
 }
 
 
-//Remove Feed from Header
-function remove_feeds() {
-	remove_action( 'wp_head', 'feed_links_extra', 3 );
-	remove_action( 'wp_head', 'feed_links', 2 );
+//======================================================================
+// CREATE THE MPAT STUFF
+//======================================================================
+
+// Register the primary menu
+function mpat_register_menus()
+{
+    register_nav_menus(array(
+        'primary-menu' => __('Primary Menu', 'mpat'),
+        //'footer-menu' =>__( 'Footer Menu', 'mpat' ),
+    ));
 }
+
+// Create 'Gallery Item','Popup' and 'Function'
+function mpat_create_post_types()
+{
+    register_post_type(
+        'mpat_gallery_item',
+        array(
+            'labels' => array(
+                'name' => __('Gallery Items'),
+                'singular_name' => __('Gallery Item'),
+                'add_new_item' => __('Create a new Gallery Item')
+            ),
+            'public' => true,
+            'has_archive' => false,
+            'menu_icon' => 'dashicons-format-gallery',
+            'taxonomies' => array('post_tag')
+        )
+    );
+    register_post_type(
+        'mpat_popup',
+        array(
+            'labels' => array(
+                'name' => __('Popups'),
+                'singular_name' => __('Popup'),
+                'add_new_item' => __('Create a new Popup')
+            ),
+            'public' => true,
+            'has_archive' => false,
+            'menu_icon' => 'dashicons-category',
+        )
+    );
+    register_post_type(
+        'mpat_function',
+        array(
+            'labels' => array(
+                'name' => __('Functions'),
+                'singular_name' => __('Function'),
+                'add_new_item' => __('Create a new Function')
+            ),
+            'public' => true,
+            'has_archive' => false,
+            'menu_icon' => 'dashicons-media-code',
+        )
+    );
+    remove_post_type_support('mpat_function', 'editor');
+    remove_post_type_support('mpat_gallery_item', 'editor');
+    remove_post_type_support('page', 'editor');
+    register_taxonomy_for_object_type('post_tag', 'page');
+}
+
+// Register shortcodes specified in mpat-shortcodes.php
+function mpat_register_shortcodes()
+{
+    add_shortcode('gallery', 'mpat_gallery_shortcode');
+}
+//-----------------------------------------------------
+//  Setup the Customiser (Under Apperance->Customise)
+//-----------------------------------------------------
+
+function mpat_add_customizer_custom_controls( $wp_customize )
+{
+
+    class MPAT_Customize_Alpha_Color_Control extends WP_Customize_Control
+    {
+
+        public $type = 'alphacolor';
+        public $palette = true;
+        public $default = 'rgba(255,255,255,0.9)';
+
+        protected function render()
+        {
+            $id = 'customize-control-' . str_replace('[', '-', str_replace(']', '', $this->id));
+            $class = 'customize-control customize-control-' . $this->type; ?>
+            <li id="<?php echo esc_attr($id); ?>" class="<?php echo esc_attr($class); ?>">
+                <?php $this->render_content(); ?>
+            </li>
+        <?php }
+
+        public function render_content()
+        { ?>
+            <label>
+                <span class="customize-control-title"><?php echo esc_html($this->label); ?></span>
+                <input type="text" data-palette="<?php echo $this->palette; ?>"
+                       data-default-color="<?php echo $this->default; ?>"
+                       value="<?php echo intval($this->value()); ?>"
+                       class="mpat-color-control" <?php $this->link(); ?> />
+            </label>
+        <?php }
+    }
+
+}
+
+function mpat_customizer_register( $wp_customize )
+{
+
+    class MPAT_Customize_Textarea_Control extends WP_Customize_Control
+    {
+        public $type = 'textarea';
+
+        public function render_content()
+        {
+            ?>
+            <label>
+                <span class="customize-control-title"><?php echo esc_html($this->label); ?></span>
+                    <textarea rows="5"
+                              style="width:100%;" <?php $this->link(); ?>><?php echo esc_textarea($this->value()); ?></textarea>
+            </label>
+            <?php
+        }
+    }
+
+    /* Settings Panel */
+    $wp_customize->add_panel( 'settings', array(
+      'title' => __( 'Theme Settings', 'mpat' ),
+      'description' => __( 'Modify the theme settings' ),
+      'priority' => 160,
+    ) );
+
+
+    /* Logo */
+    $wp_customize->add_section( 'mpat_images', array(
+        'title' => __('Logo', 'mpat'),
+        'description' => __( 'Modify the theme logo' ),
+        'panel' => 'settings',
+    ) );
+    $wp_customize->add_setting( 'logo_image', array(
+        'type' => 'theme_mod',
+        'default' => get_template_directory_uri() . '/backend/assets/logo_mpat.png',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'logo_image', array(
+        'label' => __( 'max. height: 85px, max. width: 250px', 'mpat' ),
+        'section' => 'mpat_images',
+        'settings' => 'logo_image',
+        'mime_type' => 'image',
+    ) ) );
+
+    /* Background Image */
+    $wp_customize->add_section( 'mpat_background_images', array(
+        'title' => __( 'Background Image', 'mpat' ),
+        'description' => __( 'Modify the theme Background Image' ),
+        'panel' => 'settings',
+    ) );
+    $wp_customize->add_setting( 'bg_image', array(
+        'type' => 'theme_mod',
+        'default' => get_template_directory_uri() . '/shared/assets/bgr_mpat.png',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'bg_image', array(
+        'label' => __( 'height: 1280px, width: 720px', 'mpat' ),
+        'section' => 'mpat_background_images',
+        'settings' => 'bg_image',
+        'mime_type' => 'image',
+    ) ) );
+
+    /* Font */
+    $wp_customize->add_section( 'mpat_font', array(
+        'title' => __( 'Font', 'mpat' ),
+        'description' => __( 'Modify the size of the fonts' ),
+        'panel' => 'settings',
+    ) );
+    $wp_customize->add_setting( 'title_size', array(
+        'type' => 'theme_mod',
+        'default' => '24',
+    ) );
+    $wp_customize->add_setting( 'title_color', array(
+        'type' => 'theme_mod',
+        'default' => '#666',
+    ) );
+    $wp_customize->add_setting( 'font_size', array(
+        'type' => 'theme_mod',
+        'default' => '24',
+    ) );
+    $wp_customize->add_setting( 'font_color', array(
+        'type' => 'theme_mod',
+        'default' => '#666',
+    ) );
+    $wp_customize->add_setting( 'link_color', array(
+        'type' => 'theme_mod',
+        'default' => '#00688B',
+    ) );
+    $wp_customize->add_control( 'title_size', array(
+        'label' => __( 'Edit Title Size in px' ),
+        'section' => 'mpat_font',
+        'type' => 'text',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'title_color', array(
+        'label' => __( 'Edit Title Color', 'mpat' ),
+        'section' => 'mpat_font',
+    ) ) );
+    $wp_customize->add_control( 'font_size', array(
+        'label' => __( 'Edit Font Size in px' ),
+        'section' => 'mpat_font',
+        'type' => 'text',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'font_color', array(
+        'label' => __( 'Edit Font Color', 'mpat' ),
+        'section' => 'mpat_font',
+    ) ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control($wp_customize, 'link_color', array(
+        'label' => __( 'Edit Links Color', 'mpat' ),
+        'section' => 'mpat_font',
+    ) ) );
+
+    /* General Colors */
+    $wp_customize->add_section( 'mpat_colors', array(
+        'title' => __( 'General Colors', 'mpat'),
+        'description' => __( 'Modify the theme colors' ),
+        'panel' => 'settings',
+    ) );
+    $wp_customize->add_setting( 'background_color', array(
+        'type' => 'theme_mod',
+        'default' => '#fff',
+    ) );
+    $wp_customize->add_setting( 'title_background_color', array(
+        'type' => 'theme_mod',
+    ) );;
+
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'background_color', array(
+        'label' => __( 'Edit Background Color', 'mpat' ),
+        'section' => 'mpat_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'title_background_color', array(
+        'label' => __( 'Edit Title Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_colors',
+    ) ) );
+
+
+    /* Module Colors */
+    $wp_customize->add_section( 'mpat_module_colors', array(
+        'title' => __( 'Module Settings', 'mpat' ),
+        'description' => __( 'Modify the module colors' ),
+    ) );
+    $wp_customize->add_setting( 'module_title_color', array(
+        'type' => 'option',
+        'default' => '#666',
+    ) );
+    $wp_customize->add_setting( 'module_header_bg_color', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_setting( 'module_color', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'module_title_color', array(
+        'label' => __( 'Edit Module Header Title Color', 'mpat' ),
+        'section' => 'mpat_module_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'module_header_bg_color', array(
+        'label' => __( 'Edit Module Header Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_module_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control($wp_customize, 'module_color', array(
+        'label' => __( 'Edit Module Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_module_colors',
+    ) ) );
+
+
+    /* Module Active Colors */
+    $wp_customize->add_setting( 'module_title_color_active', array(
+        'type' => 'option',
+        'default' => '#666',
+    ) );
+    $wp_customize->add_setting( 'module_header_bg_color_active', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_setting( 'module_color_active', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_setting( 'module_text_color_active', array(
+        'type' => 'option',
+        'default' => '#666',
+    ) );
+    $wp_customize->add_setting( 'module_font_color_active_highlight', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_setting( 'module_color_active_highlight', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'module_title_color_active', array(
+        'label' => __( 'Edit Selected Module Header Title Color', 'mpat' ),
+        'section' => 'mpat_module_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'module_header_bg_color_active', array(
+        'label' => __( 'Edit Selected Module Header Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_module_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'module_color_active', array(
+        'label' => __( 'Edit Selected Module Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_module_colors,'
+    ) ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control($wp_customize, 'module_text_color_active', array(
+        'label' => __( 'Edit Selected Module Text Color', 'mpat' ),
+        'section' => 'mpat_module_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control($wp_customize, 'module_font_color_active_highlight', array(
+        'label' => __( 'Edit Selected Module Highlight Font Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_module_colors',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'module_color_active_highlight', array(
+        'label' => __( 'Edit Selected Module Highlight Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_module_colors',
+    ) ) );
+
+    /* Menu Colors */
+    $wp_customize->add_section( 'mpat_menu_colors', array(
+        'title' => __( 'Menu Settings', 'mpat' ),
+        'description' => __( 'Modify the menu settings' ),
+        'priority' => 202,
+    ) );
+    $wp_customize->add_setting( 'menu_text', array(
+        'type' => 'option',
+        'default' => 'Menu',
+    ) );
+    $wp_customize->add_setting( 'hide_text', array(
+        'type' => 'option',
+        'default' => 'Hide',
+    ) );
+    $wp_customize->add_setting( 'menu_background_color', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_setting( 'menu_font_color', array(
+        'type' => 'option',
+        'default' => '#666',
+    ) );
+    $wp_customize->add_setting( 'footer_background_color', array(
+        'type' => 'option',
+    ) );
+    $wp_customize->add_control( 'menu_text', array(
+        'label' => 'Change text for the Primary Menu',
+        'section' => 'mpat_menu_colors',
+        'type' => 'text',
+    ) );
+    $wp_customize->add_control( 'hide_text', array(
+        'label' => 'Change text to hide the app',
+        'section' => 'mpat_menu_colors',
+        'type' => 'text',
+    ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'menu_background_color', array(
+        'label' => __( 'Edit Primary Menu Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_menu_colors',
+    ) ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'menu_font_color', array(
+        'label' => __( 'Edit Font Color', 'mpat' ),
+        'section' => 'mpat_menu_colors',
+        'settings' => 'menu_font_color',
+    ) ) );
+    $wp_customize->add_control( new MPAT_Customize_Alpha_Color_Control( $wp_customize, 'footer_background_color', array(
+        'label' => __( 'Edit Menu Background Color', 'mpat' ),
+        'palette' => true,
+        'section' => 'mpat_menu_colors',
+    ) ) );
+
+
+    /* Frontpage */
+
+    $wp_customize->remove_section( 'static_front_page' );
+    update_option( 'show_on_front', 'page' );
+
+    $wp_customize->add_section( 'mpat_front_page', array(
+        'title' => __('Frontpage'),
+        'priority' => 120,
+        'description' => __('Select the page to be displayed on the front'),
+    ) );
+
+    $wp_customize->add_setting( 'page_on_front', array(
+        'type' => 'option',
+        'capability' => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'page_on_front', array(
+        'label' => __('Frontpage'),
+        'section' => 'mpat_front_page',
+        'type' => 'dropdown-pages',
+    ) );
+}
+
+function mpat_customizer_css()
+{
+    ?><style type="text/css">
+        body {
+            color: <?php echo get_theme_mod( 'font_color' ); ?>;
+        }
+
+        a {
+            color: <?php echo get_theme_mod( 'link_color' ); ?>;
+        }
+
+        p {
+            font-size: <?php echo get_theme_mod( 'font_size' ); ?>px;
+        }
+
+        #hbbtv_app {
+            background-color: # <?php echo get_theme_mod( 'background_color' ); ?>;
+            background-image: url("<?php echo get_theme_mod('bg_image'); ?> ");
+        }
+
+        #title {
+            color: <?php echo get_theme_mod( 'title_color' ); ?>;
+            background-color: <?php echo get_theme_mod( 'title_background_color' ); ?>;
+        }
+
+        .menuText {
+            color: <?php echo get_theme_mod( 'menu_font_color' ); ?>;
+        }
+
+        footer {
+            background-color: <?php echo get_theme_mod( 'footer_background_color' ); ?>;
+        }
+
+        footer, footer a, #primary-menu-wrap a {
+            color: <?php echo get_theme_mod( 'menu_font_color' ); ?>;
+        }
+
+        #primary-menu-wrap {
+            background-color: <?php echo get_theme_mod( 'menu_background_color' ); ?>;
+        }
+
+        .contentHeader {
+            color: <?php echo get_theme_mod( 'module_title_color' ); ?>;
+            background-color: <?php echo get_theme_mod( 'module_header_bg_color' ); ?>;
+            font-size: <?php echo get_theme_mod( 'title_size' ); ?>px;
+        }
+
+        .active .contentHeader {
+            color: <?php echo get_theme_mod( 'module_title_color_active' ); ?>;
+            background-color: <?php echo get_theme_mod( 'module_header_bg_color_active' ); ?> !important;
+        }
+
+        .textContent, .imageContent, .galleryContent, .socialContent, .socialPopup, #item-info {
+            background-color: <?php echo get_theme_mod( 'module_color' ); ?>;
+        }
+
+        .active .textContent, .active .imageContent, .active .galleryContent, .active .socialContent {
+            color: <?php echo get_theme_mod( 'module_text_color_active' ); ?>;
+            background-color: <?php echo get_theme_mod( 'module_color_active' ); ?>;
+        }
+
+        .active .socialContent .activePost {
+            color: <?php echo get_theme_mod( 'module_font_color_active_highlight' ); ?>;
+            background-color: <?php echo get_theme_mod( 'module_color_active_highlight' ); ?>;
+        }
+    </style><?php
+}
+
+//-----------------------------------------------------
+// Frontend Changes
+//-----------------------------------------------------
 
 /* Comments */
-function hat_comment( $comment, $args, $depth ) {
-	$GLOBALS['comment'] = $comment; 
-	if ( $comment->comment_approved == '1' ):
-?>	
-	<li>
-		<article id="comment-<?php comment_ID() ?>">
-			<?php echo get_avatar( $comment ); ?>
-			<h4><?php comment_author_link() ?></h4>
-			<time><a href="#comment-<?php comment_ID() ?>" pubdate><?php comment_date() ?> at <?php comment_time() ?></a></time>
-			<?php comment_text() ?>
-		</article>
-	</li>
-<?php endif;
+function mpat_comment($comment, $args, $depth)
+{
+    $GLOBALS['comment'] = $comment;
+    if ($comment->comment_approved == '1'):
+        ?>
+        <li>
+            <article id="comment-<?php comment_ID() ?>">
+                <?php echo get_avatar($comment); ?>
+                <h4><?php comment_author_link() ?></h4>
+                <time><a href="#comment-<?php comment_ID() ?>" pubdate><?php comment_date() ?>
+                        at <?php comment_time() ?></a></time>
+                <?php comment_text() ?>
+            </article>
+        </li>
+    <?php endif;
 }
 
+function mpat_content_type($mime_type, $post_id)
+{
+    header('Content-type: application/vnd.hbbtv.xhtml+xml; charset=utf-8');
+    // Process content here
+    return $mime_type;
+}
 
 /* Customizer */
 
-function hat_add_customizer_custom_controls( $wp_customize ) {
 
-	class HAT_Customize_Alpha_Color_Control extends WP_Customize_Control {
-	
-		public $type = 'alphacolor';
-		public $palette = true;
-		public $default = 'rgba(255,255,255,0.9)';
-	
-		protected function render() {
-			$id = 'customize-control-' . str_replace( '[', '-', str_replace( ']', '', $this->id ) );
-			$class = 'customize-control customize-control-' . $this->type; ?>
-			<li id="<?php echo esc_attr( $id ); ?>" class="<?php echo esc_attr( $class ); ?>">
-				<?php $this->render_content(); ?>
-			</li>
-		<?php }
-	
-		public function render_content() { ?>
-			<label>
-				<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
-				<input type="text" data-palette="<?php echo $this->palette; ?>" data-default-color="<?php echo $this->default; ?>" value="<?php echo intval( $this->value() ); ?>" class="hat-color-control" <?php $this->link(); ?>  />
-			</label>
-		<?php }
-	}
+/* Menus */
+
+//This class defines how the primary menu will look like
+class mpat_walker_primary_menu extends Walker_Nav_Menu
+{
+    function start_el(&$output, $item, $depth = 0, $args = array(), $id=0)
+    {
+        global $wp_query;
+        $indent = ($depth > 0 ? str_repeat("\t", $depth) : ''); // code indent
+
+        $depth_classes = array(
+            ($depth == 0 ? 'main-menu-item' : 'sub-menu-item'),
+            ($depth >= 2 ? 'sub-sub-menu-item' : ''),
+            ($depth % 2 ? 'menu-item-odd' : 'menu-item-even'),
+            'menu-item-depth-' . $depth
+        );
+        $depth_class_names = esc_attr(implode(' ', $depth_classes));
+
+        $classes = empty($item->classes) ? array() : (array)$item->classes;
+        $class_names = esc_attr(implode(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item)));
+
+        $output .= $indent . '<li id="nav-menu-item-' . $item->ID . '" class="' . $depth_class_names . ' ' . $class_names . '">';
+
+        $attributes = !empty($item->attr_title) ? ' title="' . esc_attr($item->attr_title) . '"' : '';
+        $attributes .= !empty($item->target) ? ' target="' . esc_attr($item->target) . '"' : '';
+        $attributes .= !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '';
+        $attributes .= !empty($item->url) ? ' href="' . esc_attr($item->url) . '"' : '';
+        $attributes .= ' class="menu-link ' . ($depth > 0 ? 'sub-menu-link' : 'main-menu-link') . '"';
+
+        $item_output = $args->before;
+        $item_output .= '<p onclick="$(this).navEnter()" ' . $attributes . '>';
+        $item_output .= $args->link_before . apply_filters('the_title', $item->title, $item->ID);
+        $item_output .= $description . $args->link_after;
+        $item_output .= '</p>';
+
+        $item_output .= '<script> jQuery(document).ready(function($){' . '$generalNav.nav("' . $button . '",function(){$("#menu-item-' . $item->ID . '").navEnter()});});</script>';
+        if ($item->object === 'mpat_function') {
+            $func = get_post($item->object_id);
+            $item_output .= '<script> jQuery(document).ready(function($){if (!userFunctions) {userFunctions = new Object();} userFunctions.func' . $func->ID . ' = function(){' . get_post_meta($func->ID, '_mpat_functionContent', true) . '};});</script>';
+        }
+
+        $item_output .= $args->after;
+        $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);
+    }
+}
+
+//This class defines how the footer menu will look like
+class mpat_walker_footer_menu extends Walker_Nav_Menu
+{
+
+    function start_el(&$output, $item, $depth = 0, $args = array(), $id=0)
+    {
+        $is_hide = get_post_meta($item->ID, '_menu_item_is_hide', true);
+        $show = (get_post_meta($item->ID, '_menu_item_show_footer', true) === 'true') ? ' ' : 'style="display:none !important;" ';
+        global $wp_query;
+        $indent = ($depth) ? str_repeat("\t", $depth) : '';
+
+        $class_names = $value = '';
+
+        $classes = empty($item->classes) ? array() : (array)$item->classes;
+
+        $class_names = join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item));
+        $class_names = ' class="' . esc_attr($class_names) . '"';
+
+        $output .= $indent . '<li ' . $show . 'id="menu-item-' . $item->ID . '" object-id="' . $item->object_id . '"' . $value . $class_names . '>';
+        $button = get_post_meta($item->ID, '_menu_item_mpat_button', true);
+        $attributes = !empty($item->attr_title) ? ' title="' . esc_attr($item->attr_title) . '"' : '';
+        $attributes .= !empty($item->target) ? ' target="' . esc_attr($item->target) . '"' : '';
+        $attributes .= !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '';
+        $attributes .= !empty($item->url) ? ' href="' . esc_attr($item->url) . '"' : '';
+
+        $description = !empty($item->description) ? '<span>' . esc_attr($item->description) . '</span>' : '';
+
+        $item_output = $args->before;
+        if ($button != '') {
+            $item_output .= '<img src="' . get_template_directory_uri() . '/shared/assets/button' . $button . '.png"></img>';
+        }
+        $item_output .= '<p style="float:left" onclick="$(this).navEnter()" ' . $attributes . '>';
+
+        if ($is_hide === 'true') {
+            $hide_txt = get_theme_mod('hide_text');
+            if (empty($hide_txt)) {
+                $item_output .= 'Hide';
+            } else {
+                $item_output .= $hide_txt;
+            }
+        } else {
+            $item_output .= $args->link_before . apply_filters('the_title', $item->title, $item->ID);
+            $item_output .= $description . $args->link_after;
+        }
+
+        $item_output .= '</p>';
+        if ($item->object === 'mpat_function') {
+            $func = get_post($item->object_id);
+            $item_output .= '<script> jQuery(document).ready(function($){console.log("userFunc registered");if (!userFunctions) {userFunctions = new Object();} userFunctions["func' . $func->ID . '"] = function(){' . get_post_meta($func->ID, '_mpat_functionContent', true) . '};});</script></li>';
+        }
+
+        $item_output .= '<script> jQuery(document).ready(function($){' .
+            '$generalNav.nav("' . $button . '",function(){$("#menu-item-' . $item->ID . '").navEnter()});});</script>';
+
+        $item_output .= $args->after;
+
+        $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);
+    }
 
 }
 
-
-function hat_customizer_register ($wp_customize){
-
-	class HAT_Customize_Textarea_Control extends WP_Customize_Control {
-		public $type = 'textarea';
-	 
-		public function render_content() {
-			?>
-			<label>
-			<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
-			<textarea rows="5" style="width:100%;" <?php $this->link(); ?>><?php echo esc_textarea( $this->value() ); ?></textarea>
-			</label>
-			<?php
-		}
-	}
-
-	/* Logo */
-	$wp_customize->add_section('hat_images', array(
-		'title' => __('Logo' , 'hat'),
-		'description' => 'Modify the theme logo'
-	));
-	$wp_customize->add_setting('logo_image', array(
-		'default' => get_template_directory_uri().'/assets/logo_hat.png'
-	));
-	$wp_customize->add_control(new WP_Customize_Image_Control($wp_customize,'logo_image', array(
-		'label' => __('max. height: 85px, max. width: 250px', 'hat'),
-		'section' => 'hat_images',
-		'settings' => 'logo_image'
-	)));
-
-	/* Background Image */
-	$wp_customize->add_section('hat_background_images', array(
-		'title' => __('Background Image' , 'hat'),
-		'description' => 'Modify the theme Background Image'
-	));
-	$wp_customize->add_setting('bg_image', array(
-		'default' => get_template_directory_uri().'/assets/bgr_hat.png'
-	));
-	$wp_customize->add_control(new WP_Customize_Image_Control($wp_customize,'bg_image', array(
-		'label' => __('height: 1280px, width: 720px', 'hat'),
-		'section' => 'hat_background_images',
-		'settings' => 'bg_image'
-	)));
-	
-	/* General Colors */
-	$wp_customize->add_section('hat_colors', array(
-		'title' => __('General Colors' , 'hat'),
-		'description' => 'Modify the theme colors'
-	));
-	$wp_customize->add_setting('background_color', array(
-		'default' => '#fff'
-	));
-	$wp_customize->add_setting('title_color', array(
-		'default' => '#666'
-	));
-	$wp_customize->add_setting('title_background_color');
-	$wp_customize->add_setting('font_color', array(
-		'default' => '#666'
-	));
-	$wp_customize->add_setting('link_color', array(
-		'default' => '#00688B'
-	));
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'background_color', array(
-		'label' => __('Edit Background Color', 'hat'),
-		'section' => 'hat_colors',
-		'settings' => 'background_color'
-	)));
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'title_color', array(
-		'label' => __('Edit Title Color', 'hat'),
-		'section' => 'hat_colors',
-		'settings' => 'title_color'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'title_background_color', array(
-		'label' => __('Edit Title Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_colors'
-	)));
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'font_color', array(
-		'label' => __('Edit Font Color', 'hat'),
-		'section' => 'hat_colors',
-		'settings' => 'font_color'
-	)));
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'link_color', array(
-		'label' => __('Edit Links Color', 'hat'),
-		'section' => 'hat_colors',
-		'settings' => 'link_color'
-	)));
-
-	/* Module Colors */
-	$wp_customize->add_section('hat_module_colors', array(
-		'title' => __('Module Colors' , 'hat'),
-		'description' => 'Modify the module colors'
-	));
-	$wp_customize->add_setting('module_title_color', array(
-		'default' => '#666'
-	));
-	$wp_customize->add_setting('module_header_bg_color');
-	$wp_customize->add_setting('module_color');
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'module_title_color', array(
-		'label' => __('Edit Module Header Title Color', 'hat'),
-		'section' => 'hat_module_colors',
-		'settings' => 'module_title_color'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'module_header_bg_color', array(
-		'label' => __('Edit Module Header Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_module_colors'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'module_color', array(
-		'label' => __('Edit Module Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_module_colors'
-	)));
+//======================================================================
+// SETUP THE POST EDITORS
+//======================================================================
 
 
-	/* Module Active Colors */
-	$wp_customize->add_setting('module_title_color_active', array(
-		'default' => '#666'
-	));
-	$wp_customize->add_setting('module_header_bg_color_active');
-	$wp_customize->add_setting('module_color_active');
-			$wp_customize->add_setting('module_text_color_active', array(
-		'default' => '#666'
-	));
-	$wp_customize->add_setting('module_font_color_active_highlight');
-	$wp_customize->add_setting('module_color_active_highlight');
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'module_title_color_active', array(
-		'label' => __('Edit Selected Module Header Title Color', 'hat'),
-		'section' => 'hat_module_colors',
-		'settings' => 'module_title_color_active'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'module_header_bg_color_active', array(
-		'label' => __('Edit Selected Module Header Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_module_colors'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'module_color_active', array(
-		'label' => __('Edit Selected Module Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_module_colors'
-	)));
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'module_text_color_active', array(
-		'label' => __('Edit Selected Module Text Color', 'hat'),
-		'section' => 'hat_module_colors',
-		'settings' => 'module_text_color_active'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'module_font_color_active_highlight', array(
-		'label' => __('Edit Selected Module Highlight Font Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_module_colors'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'module_color_active_highlight', array(
-		'label' => __('Edit Selected Module Highlight Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_module_colors'
-	)));
+//-----------------------------------------------------
+//  Add meta boxes to page editor and custom post types
+//-----------------------------------------------------
 
-	/* Menu Colors */
-	$wp_customize->add_section('hat_menu_colors', array(
-		'title' => __('Menu Settings' , 'hat'),
-		'description' => 'Modify the menu settings',
-		'priority'  => 202
-	));
-	$wp_customize->add_setting('menu_text',array(
-	    'default' => 'Menu',
-	));
-	$wp_customize->add_setting('hide_text',array(
-	    'default' => 'Hide',
-	));
-	$wp_customize->add_setting('menu_background_color');
-	$wp_customize->add_setting('menu_font_color', array(
-		'default' => '#666'
-	));
-	$wp_customize->add_setting('footer_background_color');
-	$wp_customize->add_control('menu_text',array(
-        'label' => 'Change text for the Primary Menu',
-        'section' => 'hat_menu_colors',
-        'type' => 'text',
-    ));
-    $wp_customize->add_control('hide_text',array(
-        'label' => 'Change text to hide the app',
-        'section' => 'hat_menu_colors',
-        'type' => 'text',
-    ));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'menu_background_color', array(
-		'label' => __('Edit Primary Menu Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_menu_colors'
-	)));
-	$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,'menu_font_color', array(
-		'label' => __('Edit Font Color', 'hat'),
-		'section' => 'hat_menu_colors',
-		'settings' => 'menu_font_color'
-	)));
-	$wp_customize->add_control(new HAT_Customize_Alpha_Color_Control($wp_customize,'footer_background_color', array(
-		'label' => __('Edit Menu Background Color', 'hat'),
-		'palette' => true,
-		'section' => 'hat_menu_colors'
-	)));
+//Find out page template
+$post_id = isset($_GET['post']) ? $_GET['post'] : (isset($_POST['post_ID'])?$_POST['post_ID']:"");
+$template_file = get_post_meta($post_id, '_wp_page_template', TRUE);
+switch ($template_file) {
+    case 'default':
+        add_action('add_meta_boxes', 'fullpage_add_meta_box');
+        break;
+    case 'page-templates/template-two-columns.php':
+        add_action('add_meta_boxes', 'two_columns_add_meta_box');
+        break;
+    case 'page-templates/template-three-columns.php':
+        add_action('add_meta_boxes', 'three_columns_add_meta_box');
+        break;
+    case 'page-templates/template-media-gallery.php':
+        add_action('add_meta_boxes', 'mpat_gallery_add_meta_box');
+        break;
+    case 'page-templates/template-grid.php':
+        add_action('add_meta_boxes', 'mpat_grid_add_meta_box');
+        break;
+    case 'page-templates/template-single-media.php':
+        add_action('add_meta_boxes', 'mpat_single_media_add_meta_box');
+        break;
+    case 'page-templates/template-red-button.php':
+        add_action('add_meta_boxes', 'mpat_red_button_add_meta_box');
+        break;
+}
+add_action('add_meta_boxes', 'add_mpat_post_type_meta_boxes');
 
+//Add the boxes depending on the template
 
-	/* Frontpage */
+//'Full Page'
+function fullpage_add_meta_box()
+{
 
-	$wp_customize->remove_section('static_front_page');
-	update_option('show_on_front','page');
-	
-	$wp_customize->add_section( 'hat_front_page', array(
-		'title'          => __( 'Frontpage' ),
-		'priority'       => 120,
-		'description'    => __( 'Select the page to be displayed on the front' ),
-	) );
+    $var1 = get_template_directory_uri() . '/backend/assets/template-fullpage_mockup_Thumbnail.png';
 
-	$wp_customize->add_setting( 'page_on_front', array(
-		'type'       => 'option',
-		'capability' => 'manage_options',
-	) );
+    add_meta_box('mpat_layout_meta_box', 'Layout', 'meta_box_layout_callback', 'page', 'advanced', 'high');
+    add_meta_box('mpat_content_meta_box', 'Content Box', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var1, 'box' => 'box1'));
 
-	$wp_customize->add_control( 'page_on_front', array(
-		'label'      => __( 'Frontpage' ),
-		'section'    => 'hat_front_page',
-		'type'       => 'dropdown-pages',
-	) );
 }
 
-function hat_customizer_css(){
+//'Two Columns'
+function two_columns_add_meta_box()
+{
+
+    $var1 = get_template_directory_uri() . '/backend/assets/template-two-columns_mockup_Thumbnail_big.png';
+    $var2 = get_template_directory_uri() . '/backend/assets/template-two-columns_mockup_Thumbnail_small.png';
+
+    add_meta_box('mpat_content_meta_box_left', 'Content Box Left', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var1, 'box' => 'box1')
+    );
+
+    add_meta_box('mpat_content_meta_box_right', 'Content Box Right', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var2, 'box' => 'box2')
+    );
+}
+
+//'Three Columns'
+function three_columns_add_meta_box()
+{
+
+    $var1 = get_template_directory_uri() . '/backend/assets/template-three-columns_mockup_Thumbnail_left.png';
+    $var2 = get_template_directory_uri() . '/backend/assets/template-three-columns_mockup_Thumbnail_middle.png';
+    $var3 = get_template_directory_uri() . '/backend/assets/template-three-columns_mockup_Thumbnail_right.png';
+
+    add_meta_box('mpat_content_meta_box_left', 'Content Box Left', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var1, 'box' => 'box1')
+    );
+
+    add_meta_box('mpat_content_meta_box_middle', 'Content Box Middle', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var2, 'box' => 'box2')
+    );
+
+    add_meta_box('mpat_content_meta_box_right', 'Content Box Right', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var3, 'box' => 'box3')
+    );
+}
+
+//'Gallery'
+function mpat_gallery_add_meta_box()
+{
+    add_meta_box('mpat_gallery_meta_box', 'Gallery Layout', 'gallery_meta_box_callback', 'page', 'advanced', 'high');
+}
+
+//'Grid'
+function mpat_grid_add_meta_box(){
+    add_meta_box('mpat_grid_meta_box', 'Grid Content', 'grid_meta_box_callback', 'page', 'advanced', 'high');
+}
+
+//'Red Button'
+function mpat_red_button_add_meta_box(){
+    add_meta_box('mpat_red_button_meta_box', 'Red Button', 'red_button_meta_box_callback', 'page', 'advanced', 'high');
+}
+
+function mpat_single_media_add_meta_box(){
+
+    $var1 = get_template_directory_uri() . '/backend/assets/template-two-columns_mockup_Thumbnail_big.png';
+    $var2 = get_template_directory_uri() . '/backend/assets/template-two-columns_mockup_Thumbnail_small.png';
+
+    add_meta_box('mpat_single_media_meta_box_primary', 'Primary Content Box', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var1, 'box' => 'primary')
+    );
+
+    add_meta_box('mpat_single_media_meta_box_secondary', 'Secondary Content Box', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
+        array('iconurl' => $var2, 'box' => 'secondary')
+    );
+
+
+    add_meta_box('mpat_single_media_meta_box_advertisement', 'Advertisement', 'meta_box_advertisement_callback', 'page', 'advanced', 'high',
+        array('iconurl' => "", 'box' => 'advertisement')
+    );
+
+}
+
+//Add the meta boxes for the custom post types
+function add_mpat_post_type_meta_boxes()
+{
+    //'Functions'
+    add_meta_box('mpat_function_meta_box', 'Javascript Code', 'mpat_function_meta_box_callback', 'mpat_function', 'advanced', 'high');
+    //'Popups'
+    add_meta_box('mpat_popup_function_meta_box', 'Button Functions', 'mpat_popup_meta_box_callback', 'mpat_popup', 'advanced', 'high');
+    //'Gallery Items'
+    add_meta_box('mpat_gallery_item_meta_box', 'Gallery Item Content', 'mpat_gallery_item_meta_box_callback', 'mpat_gallery_item', 'advanced', 'high');
+}
 ?>
-	<style type="text/css">
-		body { 
-			color: <?php echo get_theme_mod('font_color'); ?>;
-		}
-		a { 
-			color: <?php echo get_theme_mod('link_color'); ?>;
-		}
-		#hbbtv_app { 
-			background-color: #<?php echo get_theme_mod('background_color'); ?>;
-			background-image: url("<?php echo get_theme_mod('bg_image'); ?> ");
-		}
-		#title { 
-			color: <?php echo get_theme_mod('title_color'); ?>;
-			background-color: <?php echo get_theme_mod('title_background_color'); ?>;
-		}
-		.menuText{
-			color: <?php echo get_theme_mod('menu_font_color'); ?>;
-		}
-		footer{
-			 background-color: <?php echo get_theme_mod('footer_background_color'); ?>;
-		}
-		footer, footer a, #primary-menu-wrap a{
-			color: <?php echo get_theme_mod('menu_font_color'); ?>;
-		}
-		#primary-menu-wrap{
-			background-color: <?php echo get_theme_mod('menu_background_color'); ?>;
-		}
-		.contentHeader{
-			color: <?php echo get_theme_mod('module_title_color'); ?>;
-			background-color: <?php echo get_theme_mod('module_header_bg_color'); ?>;
-		}
-		.active .contentHeader{
-			color: <?php echo get_theme_mod('module_title_color_active'); ?>;
-			background-color: <?php echo get_theme_mod('module_header_bg_color_active'); ?> !important;
-		}
-		.textContent, .imageContent, .galleryContent, .socialContent, .socialPopup, #item-info{
-			background-color: <?php echo get_theme_mod('module_color'); ?>;
-		}			
-		.active .textContent, .active .imageContent, .active .galleryContent, .active .socialContent{
-			color: <?php echo get_theme_mod('module_text_color_active'); ?>;
-			background-color: <?php echo get_theme_mod('module_color_active'); ?>;
-		}
-		.active .socialContent .activePost{
-			color: <?php echo get_theme_mod('module_font_color_active_highlight'); ?>;
-			background-color: <?php echo get_theme_mod('module_color_active_highlight'); ?>;
-		}
-	</style>
-<?php
-}
-
-
-/* Menu */
-
-function register_HAT_menu() {
-  register_nav_menus( array (
-	'primary-menu' =>__( 'Primary Menu', 'hat' ),
-	//'footer-menu' =>__( 'Footer Menu', 'hat' ),
-  ));
-}
-
-/**
- * Add different Metaboxes to the edit screen.
- * 
- */
-
-$post_id = $_GET['post'] ? $_GET['post'] : $_POST['post_ID'] ;
-$template_file = get_post_meta($post_id,'_wp_page_template',TRUE);
-// check for a template type
-// if ($template_file) {
-// 	echo 'Template: '.$template_file;
-// }
-if ($template_file == 'template-fullpage.php') {
-	add_action( 'add_meta_boxes', 'fullpage_add_meta_box' );
-}
-if ($template_file == 'template-two_columns.php') {
-	add_action( 'add_meta_boxes', 'two_columns_add_meta_box' );
-}
-if ($template_file == 'template-three_columns.php') {
-	add_action( 'add_meta_boxes', 'three_columns_add_meta_box' );
-}
-if ($template_file == 'template-media_gallery.php') {
-	add_action( 'add_meta_boxes', 'media_gallery_add_meta_box' );
-}
-add_action('save_post', 'save_meta_box_contentselection');
-add_action('add_meta_boxes', 'add_hat_post_type_meta_boxes');
-
-function add_hat_post_type_meta_boxes(){
-	add_meta_box('hat_function_meta_box', 'Javascript Code', 'hat_function_meta_box_callback', 'hat_function', 'advanced', 'high');
-	add_meta_box('hat_popup_function_meta_box', 'Button Functions', 'popup_meta_box_callback', 'hat_popup', 'advanced', 'high');
-	add_meta_box('hat_gallery_item_meta_box', 'Gallery Item Content', 'gallery_item_meta_box_callback', 'hat_gallery_item', 'advanced', 'high');
-}
-
-function hat_function_meta_box_callback($post, $param) {
-	?>
-	<textarea name="_hat_functionContent" id="post_text" rows="10"><?php echo get_post_meta($post->ID,'_hat_functionContent',true) ?></textarea>
-	<?php
-}
-
-function gallery_item_meta_box_callback($post, $param){
-	$postMeta = get_post_meta( $post->ID, '_hat_galleryItemContent', true);
-	if(!$postMeta) { $postMeta = array(); };
-	?>	
-		<style>
-			#description-editor {
-				left: 40%;
-				width: 55%;
-				margin-right: 5%;
-				float: left;
-				
-			}
-			#preview {
-				margin: 0px 5%;
-				left: 0%;
-				width: 30%;
-				float: left;
-			}
-			#content-edit{
-				overflow:auto
-			}
-			#cover-preview{
-				width: 100%;
-			}
-			#cover-preview img {
-				width: 100%;
-				background-size: cover;
-			}
-		</style>
-		<div id="content-edit">
-		<div id="description-editor">
-			<?php
-			wp_editor($postMeta['info'],'editor',array('textarea_name'=>'_hat_galleryItemContent[info]','drag_drop_upload' => true,'wpautop' => false));
-			?>
-			<h4>Associated Galleries</h4>
-			<div id="associated-galleries">
-				<ul style="margin-left:30px;"><?php
-					$args = array(
-						'orderby'          => 'date',
-						'order'            => 'DESC',
-						'tag__in'          => wp_get_post_tags($post->ID, array( 'fields' => 'ids' )),
-						'post_type'        => 'page',
-						'post_status'      => 'publish',
-						'suppress_filters' => true,
-						'meta_query' => array(
-							array(
-								'key'     => '_wp_page_template',
-								'value'   => 'template-media_gallery.php',
-								'compare' => '=',
-							),
-						),
-					);
-					// The Query
-					$items = new WP_Query( $args );
-
-					// The Loop
-					if ( $items->have_posts() ) {
-						while ( $items->have_posts() ) {
-							$items->the_post();
-							?>
-							<li>
-								<?php echo get_the_title();?>  <a href="<?php echo get_edit_post_link($item->ID);?>">edit</a>
-							</li>
-							<?php
-						}
-					} else {
-						// no posts found
-					}
-					/* Restore original Post Data */
-					wp_reset_postdata();
-					?>
-				</ul>
-			</div>
-		</div>
-		<div id="preview">
-			<label> Cover-URL <input type='text' name='_hat_galleryItemContent[cover_url]' value="<?php echo $postMeta['cover_url']; ?>"> <br/><br/>or Cover-Upload: <input type='button' class='media_upload' value='Select File'></label>
-			<div id="cover-preview">
-				<img src="<?php echo $postMeta['cover_url']; ?>"></img>
-			</div>
-			<label> Trailer-URL <input type='text' name='_hat_galleryItemContent[trailer_url]' value="<?php echo $postMeta['trailer_url']; ?>"> <br/><br/> or Trailer-Upload: <input type='button' class='media_upload' value='Select File'></label>
-		</div>
-		
-		</div>
-
-	<?php
-}
-
-
-function popup_meta_box_callback($post, $param){
-	$postMeta = get_post_meta( $post->ID, '_hat_popupContent', true);
-	if(!$postMeta) { $postMeta = array(); };
-?>
-
-	<!--<script type='text/javascript' src="<?php bloginfo( 'template_url' ); ?>/js/general/jquery-1.11.0.js"></script>-->
-	<p>
-		In this section you can assign your JavaScript functions to buttons which are <strong>only</strong> available in this particular popup.
-		The buttons will be shown on the footer of the popup-window.
-	</p>
-	<table id="buttonFunctions">
-	<tr>
-		<th>Button</th>
-		<th>Function</th>
-		<th>Activate</th>
-	</tr> 
-	<?php 
-		for ($i=0;$i<10;$i++) {
-			popup_button_function($i,$postMeta);
-		}
-		popup_button_function('Blue',$postMeta);
-		popup_button_function('Green',$postMeta);
-		popup_button_function('Yellow',$postMeta);
-	?>
-	</table>
-	<script>
-		function toogleTableRow(target){
-			var opt = jQuery(target).parent().parent().find('select , input:not(.checkbox)');
-			if (target.checked){
-				opt.removeAttr('disabled');
-			} else {
-				opt.attr('disabled','');
-			}
-		}
-	</script>
-<?php
-}
-
-function popup_button_function($buttonName,$meta) {
-	
-	$func_id = $meta['button_functions'][$buttonName];
-	$exist = isset($func_id);
-?>
-	<tr>
-		<th><img src="<?php echo (get_bloginfo('template_url').'/assets/button'. $buttonName.'.png') ?>"></img></th>
-		<th>
-			<select <?php disabled(!$exist);?> class="functionSelection" name="_hat_popupContent[button_functions][<?php echo $buttonName ?>]">
-				<option selected disabled> Select a function </option>
-				<?php
-				$args = array(
-					'posts_per_page'   => 5,
-					'offset'           => 0,
-					'orderby'          => 'date',
-					'order'            => 'DESC',
-					'post_type'        => 'hat_function',
-					'post_status'      => 'publish',
-					'suppress_filters' => true
-				);
-				$funcs = get_posts( $args );
-				foreach ( $funcs as $f ) {?>
-					<option value="<?php echo $f->ID; ?>" <?php selected( $f->ID, $func_id ); ?>><?php echo $f->post_title; ?></option>
-					<?php
-				}
-				?>
-			</select>
-		</th>
-		<th>
-			<input class="checkbox" type="checkbox" onchange="toogleTableRow(this)" <?php checked($exist);?>>
-		</th>
-
-	</tr>
-<?php
-}
-
-function fullpage_add_meta_box() {
-
-	$var1 = get_template_directory_uri().'/assets/template-fullpage_mockup_Thumbnail.png';
-
-	add_meta_box('hat_layout_meta_box', 'Layout', 'meta_box_layout_callback', 'page', 'advanced', 'high',
-			array( 'iconurl' => $var1, 'box' => 'box1'));
-	add_meta_box('hat_content_meta_box', 'Content Box', 'meta_box_contentselection_callback', 'page', 'advanced', 'high',
-			array( 'iconurl' => $var1, 'box' => 'box1'));
-
-}
-
-
-function two_columns_add_meta_box() {
-
-	$var1 = get_template_directory_uri().'/assets/template-two_columns_mockup_Thumbnail_big.png';
-	$var2 = get_template_directory_uri().'/assets/template-two_columns_mockup_Thumbnail_small.png';
-
-	add_meta_box('hat_content_meta_box_left', 'Content Box Left', 'meta_box_contentselection_callback','page', 'advanced', 'high',
-		array( 'iconurl' => $var1, 'box' => 'box1')
-	);
-
-	add_meta_box('hat_content_meta_box_right', 'Content Box Right', 'meta_box_contentselection_callback','page', 'advanced', 'high',
-		array( 'iconurl' => $var2, 'box' => 'box2') 
-		);
-}
-
-function three_columns_add_meta_box() {
-
-	$var1 = get_template_directory_uri().'/assets/template-three_columns_mockup_Thumbnail_left.png';
-	$var2 = get_template_directory_uri().'/assets/template-three_columns_mockup_Thumbnail_middle.png';
-	$var3 = get_template_directory_uri().'/assets/template-three_columns_mockup_Thumbnail_right.png';
-
-	add_meta_box('hat_content_meta_box_left', 'Content Box Left', 'meta_box_contentselection_callback','page', 'advanced', 'high',
-		array( 'iconurl' => $var1, 'box' => 'box1') 
-	);
-	
-	add_meta_box('hat_content_meta_box_middle', 'Content Box Middle', 'meta_box_contentselection_callback','page', 'advanced', 'high',
-		array( 'iconurl' => $var2, 'box' => 'box2') 
-	);
-	
-	add_meta_box('hat_content_meta_box_right', 'Content Box Right', 'meta_box_contentselection_callback','page', 'advanced', 'high',
-		array( 'iconurl' => $var3, 'box' => 'box3') 
-	);
-}
-
-
-function media_gallery_add_meta_box() {
-	$var1 = get_template_directory_uri().'/assets/template-fullpage_mockup_Thumbnail.png';
-
-	add_meta_box('hat_gallery_meta_box', 'Gallery Layout', 'gallery_meta_box_callback', 'page', 'advanced', 'high');
-}
-
-function gallery_meta_box_callback($post, $param){
-	$postMeta = get_post_meta( $post->ID, '_hat_pageContent', true);
-	if(!$postMeta) { $postMeta = array(); }
-	?>
-		<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Cover orientation: </p>
-			<select name="_hat_pageContent[cover_orientation]">
-				<option selected value="portrait"<?php selected( $postMeta['cover_orientation'], 'portrait' ); ?>>Portrait</option>
-				<option value="landscape"<?php selected( $postMeta['cover_orientation'], 'landscape' ); ?>>Landscape</option>
-			</select>
-		</label>
-		<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Item-list position</p>
-			<select name="_hat_pageContent[list_position]">
-				<option selected value="left"<?php selected( $postMeta['list_position'], 'left' ); ?>>Left</option>
-				<option value="right"<?php selected( $postMeta['list_position'], 'right' ); ?>>Right</option>
-			</select>
-		</label>
-		<div>
-			<h4>Associated Gallery Items</h4>
-			<div id="associated-items">
-				<ul style="margin-left:30px;"><?php
-					$args = array(
-						'orderby'          => 'date',
-						'order'            => 'DESC',
-						'tag__in'          => wp_get_post_tags($post->ID, array( 'fields' => 'ids' )),
-						'post_type'        => 'hat_gallery_item',
-						'post_status'      => 'publish',
-						'suppress_filters' => true
-					);
-					$items = get_posts( $args );
-					foreach ( $items as $item ) {?>
-						<li>
-							<?php echo $item->post_title; ?>  <a href="<?php echo get_edit_post_link($item->ID);?>">edit</a>
-						</li>
-					<?php }	?>
-				</ul>
-			</div>
-		</div>
-	<?php
-}
-
-
-function meta_box_layout_callback($post,$param){
-	$postMeta = get_post_meta( $post->ID, '_hat_pageContent', true);
-	$box = $param['args']['box'];
-	if(!$postMeta) { $postMeta = array(); }else{ $postMeta = $postMeta[$box]; }
-	
-	?>
-	<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Box Width</p>
-		<input style="width: 50px;" name="_hat_pageContent[<?php echo $box;?>][width]" type="number" min="33" max="100" step="1" value="<?php echo $postMeta['width'];?>"/> %
-	</label>
-	<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Box Aligment</p>
-			<select class="contenttype <?php echo $param['args']['box'] ?>" name="_hat_pageContent[<?php echo $box;?>][align] ?>]">
-				<option disabled selected> -- select an option -- </option>
-				<option value="left"<?php selected( $postMeta['align'], 'left' ); ?>>Left</option>
-				<option value="center"<?php selected( $postMeta['align'], 'center' ); ?>>Center</option>
-				<option value="right"<?php selected( $postMeta['align'], 'right' ); ?>>Right</option>
-			</select>
-		</label>
-	 <?php
-
-}
-
-function meta_box_contentselection_callback($post, $param) {
-
-	$contenttype = $navigable = $title = $data = "";
-	$postMeta = get_post_meta( $post->ID, '_hat_pageContent', true);
-	if(!$postMeta) { $postMeta = array(); }else{ $postMeta = $postMeta[$param['args']['box']]; }
-	
-?>
-
-	<img src="<?php echo $param['args']['iconurl'] ?>" style="width:48%; max-width:250px;min-height:80px;"></img>
-	<div style="float: right; max-width:48%;">
-		<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Contenttype:</p>
-			<select class="contenttype <?php echo $param['args']['box'] ?>" name="_hat_pageContent[<?php echo $param['args']['box'] ?>][contenttype]">
-				<option disabled selected> -- select an option -- </option>
-				<option value="broadcast"<?php selected( $postMeta['contenttype'], 'broadcast' ); ?>>Broadcast</option>
-				<option value="video"<?php selected( $postMeta['contenttype'], 'video' ); ?>>Video</option>
-				<option value="text"<?php selected( $postMeta['contenttype'], 'text' ); ?>>Text</option>
-				<option value="image"<?php selected( $postMeta['contenttype'], 'image' ); ?>>Images</option>
-				<option value="scribble"<?php selected( $postMeta['contenttype'], 'scribble' ); ?>>Scribble</option>
-				<option value="social"<?php selected( $postMeta['contenttype'], 'social' ); ?>>Social</option>
-			</select>
-		</label>
-		<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Navigable:</p>
-			<input id="nav-checkbox-<?php echo $param['args']['box'] ?>" <?php disabled($postMeta['contenttype'], 'broadcast' );?> type="checkbox" name="_hat_pageContent[<?php echo $param['args']['box'] ?>][navigable]" value="navigable" <?php if($postMeta['navigable']){echo checked;} ?>>
-		</label>
-		<label style="display: block;"><p style="width:90px;display:inline-block;margin:0;">Title:</p>
-			<input type="text" name="_hat_pageContent[<?php echo $param['args']['box'] ?>][title]" size="22" maxlength="40" value="<?php echo $postMeta['title'] ?>">
-		</label>
-	</div>
-	<div class="settings" style="padding: 15px;">
-		<div class="editor <?php echo $param['args']['box'] ?>" style="<?php if($postMeta['contenttype'] != 'text') {echo 'display:none'; } ?>">
-			<?php
-				$content = $postMeta['data'];
-				$content = isset($content)?$content:"Enter text here";
-				$args = array (
-						'textarea_name' => '_hat_pageContent['.$param['args']['box'].'][data]',
-						'drag_drop_upload' => true,
-						'wpautop' => false
-					);
-				wp_editor($content,'textedit'.$param["id"],$args);
-			?>
-		</div>
-		<div class="other">
-			<?php switch($postMeta['contenttype']):
-			case 'broadcast': ?>
-				<?php break;
-			case 'video': ?>
-				Video-URL: <input type='text' name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]' value="<?php echo $postMeta['data']; ?>"><br><br> or <br><br>File-Upload: <input type='button' class='media_upload' value='Select File'>
-				<?php break;
-			case 'image': ?>
-				Image-URLs: <textarea name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]'><?php echo addslashes($postMeta['data']); ?></textarea>
-				Image Scale:
-				<select name="_hat_pageContent[<?php echo $param['args']['box'] ?>][img_scale]">
-					<option value="quarters" selected>Quarters</option>
-					<option value="full"<?php selected( $postMeta['img_scale'], 'full' ); ?>>Full</option>
-				</select>
-				<input type='button' class='media_upload' value='Upload Image'>
-				<?php break;
-			case 'scribble': ?>
-				Scribble ID: <input type='text' name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]' value="<?php echo $postMeta['data']; ?>">
-				<?php break;
-			case 'social': ?>
-				Social ID: <input type='text' name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]' value="<?php echo $postMeta['data']; ?>">
-				<?php break; ?>
-		<?php endswitch; ?>
-		</div>
-
-	<?php submit_button(); ?>
-	</div>
-
-
-	<script type="text/javascript">
-
-		// var selected = <?php echo json_encode($postMeta.contenttype);?>;
-		// var jContenttype = jQuery('.contenttype');
-		jQuery('.contenttype.<?php echo $param['args']['box'] ?>').change(function() {
-			var html;
-			var editor = jQuery('.settings .editor.<?php echo $param['args']['box'] ?>');
-			editor.hide();
-			switch(this.value){
-				case 'broadcast':
-					html = "";
-					jQuery('#nav-checkbox-<?php echo $param['args']['box'] ?>').attr('disabled','true');
-					break;
-				case 'video':
-					html = "Video-URL: <input type='text' name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]' value=''><br><br> or <br><br>File-Upload: <input type='button' class='media_upload' value='Select File'>";
-					jQuery('#nav-checkbox-<?php echo $param['args']['box'] ?>').removeAttr('disabled');
-					break;
-				case 'text':
-					html = "";
-					editor.show();
-					jQuery('#nav-checkbox-<?php echo $param['args']['box'] ?>').removeAttr('disabled');
-					break;
-				case 'image':
-					html = "Image-URLs: <textarea name=\'_hat_pageContent[<?php echo $param['args']['box'] ?>][data]\'><\/textarea>\r\n\t\t\t\tImage Scale:\r\n\t\t\t\t<select name=\"_hat_pageContent[<?php echo $param['args']['box']; ?>][img_scale]\">\r\n\t\t\t\t\t<option value=\"quarters\" selected>Quarters<\/option><option value=\"full\"<?php selected( $postMeta['img_scale'], 'full' ); ?>>Full<\/option><\/select><input type='button' class='media_upload' value='Upload Image'>";
-					jQuery('#nav-checkbox-<?php echo $param['args']['box'] ?>').removeAttr('disabled');
-					break;
-				case 'scribble':
-					html = "Scribble ID: <input type='text' name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]'>";
-					jQuery('#nav-checkbox-<?php echo $param['args']['box'] ?>').removeAttr('disabled');
-					break;
-				case 'social':
-					html = "Social ID: <input type='text' name='_hat_pageContent[<?php echo $param['args']['box'] ?>][data]'>";
-					jQuery('#nav-checkbox-<?php echo $param['args']['box'] ?>').removeAttr('disabled');
-					break;
-				default:
-			}
-			jQuery(this).eq(0).parent().parent().next().children('.other').html(html);
-		});
-	</script>
-
-<?php
-}
-
-function save_meta_box_contentselection($post_id){
-
-	if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-	if( !current_user_can( 'edit_post' ) ) return;
-
-	if (get_post_type($post_id)=='hat_popup'){
-		$new_meta_value = $_POST['_hat_popupContent'];
-		$meta_key = '_hat_popupContent';
-		$meta_value = get_post_meta( $post_id, $meta_key, true );
-		if ( $new_meta_value && $new_meta_value != $meta_value ){
-			update_post_meta( $post_id, $meta_key, $new_meta_value );
-		}
-	} elseif (get_post_type($post_id)=='hat_function'){
-		$new_meta_value = $_POST['_hat_functionContent'];
-		$meta_key = '_hat_functionContent';
-		$meta_value = get_post_meta( $post_id, $meta_key, true );
-		if ( $new_meta_value && $new_meta_value != $meta_value ){
-			update_post_meta( $post_id, $meta_key, $new_meta_value );
-		}
-
-	} elseif (get_post_type($post_id)=='hat_gallery_item'){
-		$new_meta_value = $_POST['_hat_galleryItemContent'];
-		$meta_key = '_hat_galleryItemContent';
-		$meta_value = get_post_meta( $post_id, $meta_key, true );
-		if ( $new_meta_value && $new_meta_value != $meta_value ){
-			update_post_meta( $post_id, $meta_key, $new_meta_value );
-		}
-	
-	} else {
-		$new_meta_value = $_POST['_hat_pageContent'];
-		$meta_key = '_hat_pageContent';
-		$meta_value = get_post_meta( $post_id, $meta_key, true );
-		if ( $new_meta_value && $new_meta_value != $meta_value ){
-			update_post_meta( $post_id, $meta_key, $new_meta_value );
-		}
-	}
-
-}
-
-
-function generateContentBox($data){
-	$html = "";
-	switch($data['contenttype']):
-		case 'broadcast':
-			$html .= "<object id='broadcast' type='video/broadcast' height='100%' width='100%'></object>";
-			$html .= "<script type='text/javascript'>window.setTimeout( function() { $('#broadcast')[0].bindToCurrentChannel(); }, 10); </script>";
-			break;
-		case 'video':
-			$html .= "<div style='display:none' class='video-dummy' vid='$data[data]'></div>";
-			$html .= "<object id='videoplayer' width='100%' height='100%' type='video/mp4' data='$data[data]'></object>";
-			$html .= "<script type='text/javascript'>window.setTimeout( function() { if($('#videoplayer')){vid_obj = $('#videoplayer')[0]; if (vid_obj && vid_obj.play) vid_obj.play(1); } }, 10); </script>";
-			break;
-		case 'image':
-			$imgs = explode(',',$data[data]);
-			$html .= "<div class='contentHeader'>$data[title]</div>";
-			$html .= "<div class='imageContent ".$data[img_scale]."' >";
-			if ($data[img_scale]==='full'){
-				foreach ($imgs as $index => $img) {
-					$html .= "<div class='img-row'>";
-					$html .= "<div class='img-wrap' column='0' style='background-image:url(\"".$img."\")'></div>";
-					$html .= "</div>";
-				}
-			} else {
-				foreach ($imgs as $index => $img) {
-					if ($index % 2 == 0) {
-						$html .= "<div class='img-row'>";
-					}
-					$html .= "<div class='img-wrap' column='". $index % 2 ."' style='background-image:url(\"".$img."\")'></div>";
-					if ($index % 2 == 1 || $index==count($imgs)-1) {
-						$html .= "</div>";
-					}
-				}
-			}
-			$html .= "</div>";
-			break;
-		case 'text':
-			$html .= "<div class='contentHeader'>$data[title]</div>";
-			$html .= "<div class='textContent'>$data[data]</div>";
-			break;
-		case 'scribble':
-			$html .= "<script type='text/javascript'> $(document).ready(function(){scribble = new scribbleModule($('[data-type=scribble]')[0], $data[data], '$data[title]'); scribble.setActive(true); }); </script>";
-			break;
-		case 'social':
-			$html .= "<script type='text/javascript'> $(document).ready(function(){ SocialModule.init('[data-type=social]', $data[data], '$data[title]')}); </script>";
-	endswitch;
-	echo $html;
-}
-
-
-
-
-
-/**
- * Adds a box to the main column on the Post and Page edit screens.
- */
-
-$current_template;
-function myplugin_add_meta_box() {
-
-	$post_id = $_GET['post'] ? $_GET['post'] : $_POST['post_ID'] ;
-	$GLOBALS['current_template'] = substr(get_post_meta($post_id,'_wp_page_template',TRUE),0,-4);
-
-
-	$screens = array( 'post', 'page');
-
-	foreach ( $screens as $screen ) {
-
-		add_meta_box(
-			'myplugin_sectionid',
-			__( 'Design of '.$GLOBALS['current_template'], 'myplugin_textdomain' ),
-			'myplugin_meta_box_callback',
-			$screen
-		);
-	}
-}
-
-add_action( 'add_meta_boxes', 'myplugin_add_meta_box' );
-
-/**
- * Prints the box content.
- * 
- * @param WP_Post $post The object for the current post/page.
- */
-function myplugin_meta_box_callback($post) {
-
-	$template_mockup = get_template_directory_uri().'/assets/'.$GLOBALS['current_template'].'_mockup.png';
-	echo  '<img src="'.$template_mockup.'" style="width:100%" ></img>';
-
-}
-
-
-

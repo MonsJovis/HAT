@@ -1,10 +1,9 @@
-
 <?php
 /*
     
-Theme Name:     hat
-Theme URI:      http://hat.fokus.fraunhofer.de/wordpress/
-Description:    HbbTV Application Toolkit
+Theme Name:     mpat
+Theme URI:      http://mpat.fokus.fraunhofer.de/wordpress/
+Description:    Multi-platform Application Toolkit
 Version:        0.1
 Author:         Fraunhofer Fokus
 Author URI:     http://www.fokus.fraunhofer.de/go/fame

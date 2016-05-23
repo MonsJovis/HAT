@@ -1,0 +1,304 @@
+#hbbtv_app {
+    position: absolute;
+    width:1280px;
+    height:720px;
+    margin:0;
+    overflow:hidden;
+    font-family:Tiresias,Arial,Helvetica,sans-serif;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+#safe_area {
+    position: absolute;
+    top:0%;
+    left: 0%;
+    width:90%;
+    height:90%;
+    margin:0;
+}
+
+#nav-bar {
+    width: 100%;
+    height: 20%;
+    background-color: #aaaaaa;
+    top: 425px;
+    position: absolute;
+}
+
+/*--------------------------------------------------------------*/
+
+@CHARSET "ISO-8859-1";
+
+* {
+    padding: 0;
+    margin: 0;
+    border:none;
+}
+html {
+    background-color: transparent;
+}
+body {
+    width:1280px;
+    height:720px;
+    margin: 0;
+    overflow:hidden;
+    background:transparent;
+}
+div {
+    position:absolute;
+    font-size:20px;
+    font-family:Tiresias, sans-serif;
+    margin:0;
+    padding:0;
+}
+img {
+    border:0;
+    margin:0;
+    padding:0;
+}
+#oipf {
+    position:absolute;
+    visibility:hidden;
+    width:0;
+    height:0;
+}
+#bg {
+    width:1280px;
+    height:720px;
+    background-repeat:no-repeat;
+}
+#redbutton {
+    position:absolute;
+    width:1280px;
+    height:720px;
+    left:0px;
+    top:0px;
+}
+#bluebutton {
+    position:absolute;
+    width:1280px;
+    height:720px;
+    left:0px;
+    top:0px;
+}
+
+/*!*/
+#content {
+    z-index:0;
+    left:0px;
+    top:0px;
+    width:1280px;
+    height:720px;
+}
+
+/*!*/
+#top-bar {
+    left:0px;
+    top:420px;
+    width:1280px;
+    height:40px;
+    opacity:0.6;
+    background-color: #000000;
+}
+/*!*/
+#middle-bar {
+    left:0px;
+    top:460px;
+    width:1280px;
+    height:180px;
+    background-color:#FFFFFF;
+    opacity:0.8;
+}
+/*!*/
+#bottom-bar {
+    left:0px;
+    top:640px;
+    width:1280px;
+    height:40px;
+    background-color:#000000;
+    opacity:0.6;
+}
+#logo {
+    left: 0px;
+    top: 640px;
+    width:400px;
+    height:40px;
+    background-repeat:no-repeat;
+    background-image:url(../img/arte-fokus_LOGO.png);
+}
+/*!*/
+#date {
+    left: 0px;
+    top: 430px;
+    width:1212px;
+    height:20px;
+    font-size:16px;
+    text-align:right;
+    color:white;
+    font-weight:bold;
+}
+/*!*/
+#date .time {
+    color:#FD481C;
+    font-weight:bold;
+}
+/*!*/
+#date .line {
+    margin:6px 15px;
+    width:20px;
+    height:1px;
+}
+.scroll-spacer {
+    height:180px;
+    position:relative;
+    width: 498px;
+    float: left
+}
+/*!*/
+#left-arrow {
+    position:absolute;
+    left:482px;
+    top:542px;
+    width:10px;
+    height:20px;
+    background-image:url('http://static-cdn.arte.tv/redbutton/images/left.png');
+    background-repeat:no-repeat;
+}
+/*!*/
+#right-arrow {
+    position:absolute;
+    left:786px;
+    top:542px;
+    width:10px;
+    height:20px;
+    background-image:url('http://static-cdn.arte.tv/redbutton/images/right.png');
+    background-repeat:no-repeat;
+}
+#message {
+    z-index: 999;
+    left:0px;
+    top:510px;
+    width:1280px;
+    height:25px;
+    color:#666;
+    font-weight:bold;
+    text-align:center;
+}
+
+#app-list {
+    overflow: hidden;
+    left:0px;
+    top:460px;
+    width:1280px;
+    height:180px;
+}
+
+#scroll-container {
+    height:180px;
+    width:10000px;
+    overflow: auto;
+}
+/*!*/
+.app-item {
+    opacity: 0.8;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    float: left;
+    width:231px;
+    height:130px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    margin-right: 13px;
+    position: relative;
+    background-color: #000000;
+}
+.app-item.active , #active-app-over {
+    background-repeat: no-repeat;
+    width:278px;
+    height:156px;
+    opacity: 1.0;
+}
+
+.app-item.active {
+    margin:11px 23px 0px 13px;
+}
+
+#active-app-over {
+    padding-right:6px;
+    padding-bottom:6px;
+    left: 498px;
+    top:468px;
+    position:absolute;
+    background-image:url('http://static-cdn.arte.tv/redbutton/images/centeritemoverbg.png');
+}
+/*!*/
+#left-area {
+    position:absolute;
+    left:330px;
+    top:640px;
+    width:280px;
+    height:40px;
+}
+
+.leftareaitem {
+    position:relative;
+    display:inline-block;
+    overflow:hidden;
+    width:110px;
+    height:40px;
+}
+/*!*/
+#right-area {
+    position: absolute;
+    left: 877px;
+    top: 640px;
+    width: 384px;
+    height: 40px;
+}
+/*!*/
+#right-area .item {
+    position:relative;
+    display:inline-block;
+    overflow:hidden;
+    width:155px;
+    height:28px;
+    background-image:url('http://static-cdn.arte.tv/redbutton/images/rightareaitembg.png');
+    background-repeat:no-repeat;
+    text-align:left;
+    font-size:14px;
+    color:white;
+    padding-left:20px;
+    padding-top:12px;
+}
+/*!*/
+#right-area .item .pict {
+    position:relative;
+    display:inline-block;
+    width:10px;
+    height:10px;
+    margin-right:10px;
+}
+#right-area .item .red {
+    background-color:#DA0000;
+}
+
+#right-area .item .blue {
+    background-color:#3993D9;
+}
+.disabled {
+    opacity:0.3;
+}
+/*!*/
+#nolink {
+    position:absolute;
+    top:425px;
+    left:0px;
+    width:1280px;
+    height:30px;
+    font-size:18px;
+    color:#FD481C;
+    text-align:center;
+    visibility:hidden;
+}

@@ -1,4 +1,3 @@
-
 <?php
 function is_valid($arg){
 	return isset($arg) && !empty($arg);
@@ -20,7 +19,7 @@ if (is_valid($_GET) && is_valid($_GET['action']) && is_valid($_GET['args'])){
 }
 
 function get_gallery_item_info($id){
-	$info = get_post_meta($id,'_hat_galleryItemContent',true);
+	$info = get_post_meta($id,'_mpat_galleryItemContent',true);
 	if (is_valid($info)){
 		$info['title']=get_the_title($id);
 		echo json_encode($info);

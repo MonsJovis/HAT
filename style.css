@@ -1,14 +1,14 @@
 /*
-Theme Name: 	hat
-Theme URI: 		http://hat.fokus.fraunhofer.de/wordpress/
-Description: 	HbbTV Application Toolkit
+Theme Name: 	MPAT
+Theme URI: 		http://mpat.fokus.fraunhofer.de/wordpress/
+Description: 	Multi-platform Application Toolkit
 Version: 		0.1
 Author: 		Fraunhofer Fokus
 Author URI: 	http://www.fokus.fraunhofer.de/go/fame
 Tags: 			hbbtv
 */
 
-@import "css/reset.css";
+@import "frontend/css/reset.css";
 
 div,
 article,
@@ -73,6 +73,7 @@ header {
     padding: 5px;
     font-size: 40px;
     color: #545454;
+    background-color: rgba(255,255,255,0.9);
 }
 
 #logo {
@@ -175,7 +176,7 @@ header {
 }
 
 
-.imageContent.full .img-wrap {
+.imageContent.full .img-wrap, .imageContent.large .img-wrap {
     width: 100%;
 }
 
@@ -185,7 +186,7 @@ header {
     height: 50%;
 }
 
-.imageContent.full .img-row {
+.imageContent.full .img-row, .imageContent.large .img-row {
     width: 100%;
     height: 100%;
 }
@@ -259,19 +260,19 @@ header {
     float: right;
 }
 .socialContent .postSourceIcon.twitter{
-    background-image: url(assets/icon_twitter.png);
+    background-image: url(frontend/assets/icon_twitter.png);
 }
 .socialContent .postSourceIcon.facebook{
-    background-image: url(assets/icon_facebook.png);
+    background-image: url(frontend/assets/icon_facebook.png);
 }
 .socialContent .postSourceIcon.instagram{
-    background-image: url(assets/icon_instagram.png);
+    background-image: url(frontend/assets/icon_instagram.png);
 }
 .socialContent .postSourceIcon.scribble{
-    background-image: url(assets/icon_scribblelive.png);
+    background-image: url(frontend/assets/icon_scribblelive.png);
 }
 .socialContent .postCommentsIcon{
-    background-image: url(assets/icon_comment.png);
+    background-image: url(frontend/assets/icon_comment.png);
     right: 36px;
 }
 
@@ -491,6 +492,7 @@ footer li{
     top: 0px;
     left: 0px;
     margin: 0;
+    padding: 0;
     position: fixed !important;
     z-index: 10;
 }
@@ -524,12 +526,51 @@ footer li{
 }
 #popup .arrowdown {
     right: 40px;
-    background-image: url(assets/arrow_down_white.png);
+    background-image: url(frontend/assets/arrow_down_white.png);
 }
 #popup .arrowup{
     right:0;
-    background-image: url(assets/arrow_up_white.png);
+    background-image: url(frontend/assets/arrow_up_white.png);
 }
+
+.arrows {
+    width:100%;
+    height:100%;
+    position: absolute;
+}
+
+.arrows .arrow {
+    width: 60px;
+    height: 60px;
+    background-size: 100%;
+}
+
+.arrows .arrow.arrow-left{
+    margin-left:4%;
+    top:44%;
+    float: left;
+    background-image: url(frontend/assets/arrow_left_white.png);
+}
+
+.arrows .arrow.arrow-right{
+    margin-right:4%;
+    top:44%;
+    float: right;
+    background-image: url(frontend/assets/arrow_right_white.png);
+}
+
+.arrows .arrow.arrow-up{
+    top:9%;
+    margin:auto;
+    background-image: url(frontend/assets/arrow_up_white.png);
+}
+
+.arrows .arrow.arrow-down{
+    top: 68%;
+    margin:auto;
+    background-image: url(frontend/assets/arrow_down_white.png);
+}
+
 
 .arrows-h {
     width: 1140px;
@@ -546,12 +587,12 @@ footer li{
 
 .arrows-h .arrow.arrowleft{
     float: left;
-    background-image: url(assets/arrow_left_white.png);
+    background-image: url(frontend/assets/arrow_left_white.png);
 }
 
 .arrows-h .arrow.arrowright{
     float: right;
-    background-image: url(assets/arrow_right_white.png);
+    background-image: url(frontend/assets/arrow_right_white.png);
 }
 
 
@@ -664,3 +705,155 @@ footer li{
     width: 100%;
     height: 100%;
 }
+
+.video-360-ui-container{
+    width:100%;
+    height:100%;
+}
+
+#controls-video-360 {
+    font-family: TiresiasScreenFont;
+    position: absolute;
+    left: 88px;
+    top: 374px;
+    height: 24px;
+    z-index: 7;
+}
+
+.fullscreen #controls-video-360 {
+    font-family: TiresiasScreenFont;
+    position: absolute;
+    left: 280px;
+    top: 620px;
+    height: 24px;
+    z-index: 7;
+}
+
+.control-button-360 {
+    float: left;
+    margin-left: 1px;
+    min-width: 30px;
+    height: 24px;
+}
+
+.control-button-360.active {
+    color: #FFFFFF;
+    background-color: rgba(250, 73, 23, 1);
+}
+
+#controls-video-360 div {
+    float: left;
+    margin-left: 1px;
+}
+
+.button-360.label {
+    line-height: 24px;
+    text-align: center;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.button-360 {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+#button-360-stop {
+    background-image: url("frontend/assets/ltr_btn_stop.png");
+    z-index: 8;
+}
+
+#button-360-stop.active {
+    background-position: 0 -48px;
+    background-color: rgba(250, 73, 23, 1);
+}
+
+#button-360-toogleplay {
+    background-image: url("frontend/assets/ltr_btn_play_pause.png");
+    z-index: 8;
+}
+
+#button-360-toogleplay.play.active {
+    background-position: 0 24px;
+    background-color: rgba(250, 73, 23, 1);
+}
+
+#button-360-toogleplay.active:not(.play) {
+    background-color: rgba(250, 73, 23, 1);
+    background-position: 30px 24px;
+}
+
+#button-360-toogleplay.play {
+    background-position: 0 0;
+}
+
+#button-360-toogleplay:not(.play) {
+    background-position: 30px 0;
+}
+
+#duration-360 {
+    height: 24px;
+    background-color: black;
+    z-index: 8;
+}
+
+
+#button-360-fullscreen.active {
+    background-position: 0 -48px;
+    background-color: rgba(250, 73, 23, 1);
+}
+
+#button-360-fullscreen {
+    background-image: url("frontend/assets/ltr_btn_plein_ecran.png");
+    z-index: 8;
+}
+
+
+#player-time-elapsed {
+    float: left;
+    width: 60px;
+    color: white;
+    z-index: 9;
+    line-height: 24px;
+    text-align: center;
+}
+
+#player-track {
+    margin-top: 10px;
+    float: left;
+    width: 275px;
+    height: 2px;
+    background-color: #252525;
+    z-index: 9;
+}
+
+#player-track-elapsed {
+    width: 0;
+    height: 100%;
+    background-color: white;
+    z-index: 10;
+}
+
+#player-time-full {
+    float: left;
+    line-height: 24px;
+    color: white;
+    width: 60px;
+    text-align: center;
+    z-index: 9;
+}
+
+#seeker-360 {
+    background-color: #000000;
+}
+
+
+
+
+
+
+
+
+
+

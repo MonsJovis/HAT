@@ -1,0 +1,46 @@
+
+.content_advertisement {
+    position: absolute;
+    top: 446px;
+    height:140px;
+    width:750px;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000000;
+}
+
+.content_primary {
+    position: absolute;
+    width: 750px;
+    height: 421px;
+    background-color: transparent;
+}
+
+.content_secondary {
+    position: absolute;
+    background-color: transparent;
+    width: 350px;
+    left: 775px;
+    height: 586px;
+}
+
+.content_secondary .textContent {
+    height:521px;
+}
+
+.content_primary .textContent {
+    height:356px;
+}
+
+#content {
+    top: 50px !important;
+    height: 600px !important;
+}
+
+.content_advertisement.active:before{
+    border-color: #aaaaaa;
+    border-style:solid;
+    border-width:5px;
+    box-sizing: border-box;
+}
