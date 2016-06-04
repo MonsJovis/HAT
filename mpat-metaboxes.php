@@ -321,7 +321,7 @@ function red_button_meta_box_callback($post, $param){
     <input style="margin-left:24px" type="text" size="3" value="<?php echo $postMeta['fadeinTime'] ?>" name="<?php echo $page_content_key?>[fadeinTime]">
     <br>Display Duration:
     <input type="text" size="3" value="<?php echo $postMeta['displayDuration'] ?>" name="<?php echo $page_content_key?>[displayDuration]">
-    
+
     <div>
     <br>
     Redbutton Image <input type='button' data-uploadertype="redbutton" class='media_upload' value='Select/Change Image'>
@@ -330,7 +330,7 @@ function red_button_meta_box_callback($post, $param){
         <div style="margin-left:109px;margin-top:-17px;width:250px;height:150px;background-image:url(<?php echo $postMeta['redbutonimage'] ?>);background-repeat:no-repeat;background-size:contain;background-position:center;border:1px solid lightgray;" >
         </div>
     </div>
-    
+
     <?php
 }
 
@@ -412,9 +412,116 @@ function content_broadcast_callback($postMeta,$box){
 
 function content_video_callback($postMeta, $box){
     global $page_content_key;
-    ?>Video-URL: <input type='text' name='<?php echo $page_content_key;?>[<?php echo $box ?>][data]'
-                                      value="<?php echo $postMeta['data']; ?>"><br><br> or <br><br>File-Upload: <input
-                        type='button' class='media_upload' value='Select File'><?php
+
+    $vtts = array();
+    foreach ($postMeta as $key => $value) {
+      if (strstr($key, 'vtt_') !== false) {
+        $vtts[] = $value;
+      }
+    }
+?>
+    Video-URL: <input type='text' name='<?php echo $page_content_key;?>[<?php echo $box ?>][data]' value="<?php echo $postMeta['data']; ?>">
+    <br>
+    <br>
+    or <br>
+    <br>File-Upload: <input type='button' class='media_upload' value='Select File'>
+    <br>
+    <br>
+    <hr>
+    <br>
+    Subtitles:<br>
+
+    <?php ob_start(); ?>
+    <div class="subtitle_file">
+      <input type="hidden" name="<?php echo $page_content_key;?>[<?php echo $box ?>][vtt_{{NO}}][attachment_id]" value="" />
+      <label></label>
+      <?php print mpat_lang_select($page_content_key.'['.$box.'][vtt_{{NO}}][language]') ?>
+      <span class="dashicons dashicons-trash"></span>
+    </div>
+    <?php $subtitleTemplate = ob_get_contents(); ?>
+    <?php ob_end_clean(); ?>
+
+    <div class="subtitle-files-outer">
+
+      <?php foreach($vtts as $index => $vtt): ?>
+        <div class="subtitle-file">
+          <input type="hidden" name="<?php echo $page_content_key.'['.$box.'][vtt_'.$index.'][attachment_id]'?>" value="<?php print $vtt['attachment_id'] ?>" />
+          <label><?php print basename( get_attached_file( $vtt['attachment_id'] ) ); ?></label>
+          <?php print mpat_lang_select($page_content_key.'['.$box.'][vtt_'.$index.'][language]', $vtt['language']) ?>
+          <span class="dashicons dashicons-trash"></span>
+        </div>
+      <?php endforeach ?>
+
+    </div>
+    <input id="vtt_attachments_button" type="button" value="Select or upload a subtitle file" />
+
+    <script>
+      (function($) {
+
+        var media_uploader = null;
+        var subtitleTemplate = '<?php print json_encode($subtitleTemplate); ?>';
+
+        function open_media_uploader_video() {
+
+          media_uploader = wp.media({
+            title: 'Select or upload a subitle file (WebVTT)',
+            button: {
+              text: 'Select'
+            },
+            multiple: true
+          });
+
+          media_uploader.on("select", function() {
+            var totalIndex = $('.subtitle-file').length - 1;
+            var attachments = media_uploader.state().get('selection').toJSON();
+            $.each(attachments, function(index, attachment) {
+              var $file = $(subtitleTemplate);
+              $('input[type=hidden]', $file).val(attachment.id);
+              $('input[type=hidden]', $file).attr('name', $('input[type=hidden]', $file).attr('name').replace('{{NO}}', totalIndex));
+              $('label', $file).html(attachment.filename);
+              $('select', $file).attr('name', $('select', $file).attr('name').replace('{{NO}}', totalIndex));
+              $('.dashicons-trash', $file).click(function() {
+                $file.remove();
+                totalIndex--;
+              });
+              $file.show();
+              $file.appendTo($('.subtitle-files-outer')[0]);
+              totalIndex++;
+            });
+          });
+
+          media_uploader.open();
+
+        }
+
+        $('#vtt_attachments_button').click(open_media_uploader_video);
+
+        $('.subtitle-file .dashicons-trash').click(function() {
+          $(this).parent().remove();
+        });
+
+       }(jQuery));
+
+    </script>
+<?php
+}
+
+
+function mpat_lang_select($name = 'language', $defaultValue = null) {
+  $fileContent = file_get_contents(get_template_directory() . '/assets/languages.json', 'r');
+  $json = json_decode($fileContent);
+  ob_start();
+?>
+  <select name="<?php print $name ?>">
+    <option value=""><?php print __('- Select the language -') ?></option>
+    <?php foreach ($json->lang as $key => $values): ?>
+      <option value="<?php print $key ?>"<?php if ($defaultValue == $key) print ' selected' ?>><?php print $values[0] ?></option>
+    <?php endforeach ?>
+  </select>
+<?php
+  $html = ob_get_contents();
+  ob_end_clean();
+  return $html;
 }
 
 function content_scribble_callback($postMeta, $box){
@@ -759,4 +866,3 @@ function ob_get_clean_json(){
         if ($a === $b) echo 'active';
     }
 ?>
-
