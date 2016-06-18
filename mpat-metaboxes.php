@@ -766,7 +766,7 @@ function generateContentBox($data)
         case 'video':
             $html .= "<div style='display:none' class='video-dummy' vid='$data[data]'></div>";
             $html .= "<object id='videoplayer' width='100%' height='100%' type='video/mp4' data='$data[data]'></object>";
-            $html .= "<script type='text/javascript'>jQuery(document).ready(function($){window.setTimeout( function() { if($('#videoplayer').length){vid_obj = $('#videoplayer')[0]; if (vid_obj && vid_obj.play) vid_obj.play(1); } }, 10); });</script>";
+            $html .= "<script type='text/javascript' src='".get_template_directory_uri()."/frontend/js/metaboxes/video.js'></script>";
             break;
         case 'image':
             $html .= "<div class='contentHeader'>$data[title]</div><div>";
