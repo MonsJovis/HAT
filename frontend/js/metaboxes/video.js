@@ -1,6 +1,6 @@
 (function($) {
 
-	var $videoPlayer, videoObj;
+	var $videoPlayer, videoObj, subtitles;
 
 	function initVideoPlayer() {
 
@@ -40,17 +40,26 @@
 		if (videoObj && videoObj.play) {
 			videoObj.play(1);
       $videoPlayer.trigger('play'); // TODO: trigger does not work
-      renderSubtitles();
-		}
 
+		}
+		for (var i=0; i<subtitles.length; i++){
+			renderSubtitles(i);
+		}
   }
 
-  function renderSubtitles() {
-    // TODO: implement the continuos render mechanism for the subtitles
+	function renderSubtitles(i) {
+	  setTimeout(function() {
+		  console.log( subtitles[i].begin + " " + subtitles[i].text);
+	  }, subtitles[i].begin);
+
   }
 
 	$(document).ready(function() {
 		setTimeout(initVideoPlayer, 10);
+		jQuery.get( "/wp-content/themes/HAT/sample_subtitles", function(data){
+			subtitles = parseSubtitles(data);
+		});
+
 	});
 
 })(jQuery);
