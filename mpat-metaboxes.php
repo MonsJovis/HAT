@@ -765,6 +765,8 @@ function generateContentBox($data)
             break;
         case 'video':
             $html .= "<div style='display:none' class='video-dummy' vid='$data[data]'></div>";
+            $html .= '<div class="videoplayer-outer">';
+            $html .= '<div style="display:none" class="subtitle-item"></div>';
             $html .= "<object id='videoplayer' width='100%' height='100%' type='video/mp4' data='$data[data]'>";
             foreach ($data as $key => $value) {
               if (strstr($key, 'vtt_') !== false) {
@@ -778,6 +780,8 @@ function generateContentBox($data)
               }
             }
             $html .= '</object>';
+            $html .= '</div>';
+            $html .= "<link rel='stylesheet' href='".get_template_directory_uri()."/frontend/css/metabox-video.css'>";
             $html .= "<script type='text/javascript' src='".get_template_directory_uri()."/frontend/js/metaboxes/video.js'></script>";
             break;
         case 'image':
