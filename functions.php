@@ -145,6 +145,8 @@ function mpat_enqueue_frontend_scripts()
 
     wp_enqueue_script('jquery-timeago', get_template_directory_uri() . '/frontend/js/scribble/jquery.timeago.js', array('jquery'));
 
+    wp_enqueue_script('subtitles', get_template_directory_uri() . '/frontend/js/modules/subtitles.js', array('jquery'));
+
     //template specific styles and scripts
     if (is_page_template('page-templates/template-media-gallery.php')) {
 
