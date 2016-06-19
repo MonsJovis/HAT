@@ -472,7 +472,7 @@ function content_video_callback($postMeta, $box){
           });
 
           media_uploader.on("select", function() {
-            var totalIndex = $('.subtitle-file').length - 1;
+            var totalIndex = $('.subtitle-file').length;
             var attachments = media_uploader.state().get('selection').toJSON();
             $.each(attachments, function(index, attachment) {
               var $file = $(subtitleTemplate);
