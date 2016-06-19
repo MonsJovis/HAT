@@ -38,20 +38,26 @@
 			console.log('seeked');
 		});
 
-		if (videoObj && videoObj.play) {
+		readyCallback();
+
+	}
+
+	function readyCallback() {
+		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
 			videoObj.play(1);
 			$videoPlayer.trigger('play'); // TODO: trigger does not work
-		}
-		for (var i=0; i<subtitles.length; i++){
-			renderSubtitles(i);
+			for (var i = 0; i < subtitles.length; i++) {
+				renderSubtitles(i);
+			}
 		}
 	}
+
 	function renderSubtitles(i) {
 		setTimeout(function() {
-			console.log($subtitleItem, subtitles[i].text);
 			$subtitleItem.html(subtitles[i].text).show();
 		}, subtitles[i].begin);
 	}
+
 	$(document).ready(function() {
 
 		$videoPlayer = $('#videoplayer');
@@ -77,10 +83,14 @@
 			}
 		});
 
-		$.get(subtitleFiles[0]['url'], function(data){
-			subtitles = parseSubtitles(data);
-		});
+		if (subtitleFiles[0]) {
+			$.get(subtitleFiles[0].url, function(data) {
+				subtitles = parseSubtitles(data);
+				readyCallback();
+			}, 'text');
+		}
 
 		setTimeout(initVideoPlayer, 10);
+
 	});
 })(jQuery);
