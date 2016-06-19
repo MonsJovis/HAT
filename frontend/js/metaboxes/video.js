@@ -54,8 +54,14 @@
 
 	function renderSubtitles(i) {
 		setTimeout(function() {
+			$subtitleItem.data('subtitle', i);
 			$subtitleItem.html(subtitles[i].text).show();
 		}, subtitles[i].begin);
+		setTimeout(function() {
+			if ($subtitleItem.data('subtitle') === i) {
+				$subtitleItem.hide();
+			}
+		}, subtitles[i].end);
 	}
 
 	$(document).ready(function() {
