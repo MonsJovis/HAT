@@ -1,11 +1,12 @@
 (function($) {
 
 	var $videoPlayer,
-    videoObj,
-    $subtitleItem,
-    subtitles,
-    subtitleFiles = [],
-    timeouts = [];
+		videoObj,
+		$subtitleItem,
+		subtitles,
+		subtitleFiles = [],
+		timeouts = [],
+		isFireHbb = false;
 
 	function initVideoPlayer() {
 
@@ -17,19 +18,19 @@
 
 		$videoPlayer.on('play', function() {
 			console.log('play');
-      setAllTimouts();
+			setAllTimouts();
 		});
 		$videoPlayer.on('pause', function() {
 			console.log('pause');
-      clearAllTimeouts();
+			clearAllTimeouts();
 		});
 		$videoPlayer.on('ended', function() {
 			console.log('ended');
 		});
 		$videoPlayer.on('seeked', function() {
 			console.log('seeked');
-      clearAllTimeouts();
-      setAllTimouts();
+			clearAllTimeouts();
+			setAllTimouts();
 		});
 
 		readyCallback();
@@ -37,13 +38,13 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
-    var showttl = videoObj.currentTime*1000 - subtitle.begin,
-      hidettl = videoObj.currentTime*1000 - subtitle.end;
-    if (hidettl < 0) {
-      return;
-    } else if (showttl < 0 && hidettl > 0) {
-      showttl = 0;
-    }
+		var showttl = subtitle.begin - videoObj.currentTime * 1000,
+			hidettl = subtitle.end - videoObj.currentTime * 1000;
+		if (hidettl < 0) {
+			return;
+		} else if (showttl < 0 && hidettl > 0) {
+			showttl = 0;
+		}
 		timeouts.push(setTimeout(function() {
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
@@ -55,25 +56,44 @@
 		}, hidettl));
 	}
 
-  function setAllTimouts() {
-    for (var i = 0; i < subtitles.length; i++) {
-      setSubtitleTimeout(subtitles[i]);
-    }
-  }
+	function setAllTimouts() {
+		for (var i = 0; i < subtitles.length; i++) {
+			setSubtitleTimeout(subtitles[i]);
+		}
+	}
 
-  function clearAllTimeouts() {
-    while (timeouts.length) {
-      clearTimeout(timeouts.pop());
-    }
-  }
+	function clearAllTimeouts() {
+		while (timeouts.length) {
+			clearTimeout(timeouts.pop());
+		}
+	}
 
-  function readyCallback() {
+	function readyCallback() {
 		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
 			videoObj.play(1);
+      if (isFireHbb) {
+        videoObj.currentTime = 0;
+        setAllTimouts();
+      }
 		}
-	}  
+	}
 
 	$(document).ready(function() {
+
+		var firAttrs = ['firetv-fullscreen',
+			'firetv-tvimage-display',
+			'firetv-margin-display',
+			'firetv-scaling',
+			'firetv-tv-format',
+			'firetv-class',
+			'firetv-profile'
+		];
+		for (var i = 0; i < firAttrs.length; i++) {
+			if ($('html').attr(firAttrs[i])) {
+				isFireHbb = true;
+				break;
+			}
+		}
 
 		$videoPlayer = $('#videoplayer');
 		$('param', $videoPlayer).each(function(index, obj) {
