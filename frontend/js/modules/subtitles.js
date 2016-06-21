@@ -3,6 +3,7 @@ function parseSubtitles(data) {
 	var lines = data.split("\n");
 	var j = 1; //phrases counter
 	var phrase = {
+		id: j,
 		begin: null,
 		end: null,
 		text: null
@@ -19,6 +20,7 @@ function parseSubtitles(data) {
 			subtitles.push(phrase);
 			j = j + 1;
 			phrase = {
+				id: j,
 				begin: null,
 				end: null,
 				text: null

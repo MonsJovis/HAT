@@ -1,6 +1,11 @@
 (function($) {
 
-	var $videoPlayer, videoObj, $subtitleItem, subtitles, subtitleFiles = [];
+	var $videoPlayer,
+    videoObj,
+    $subtitleItem,
+    subtitles,
+    subtitleFiles = [],
+    timeouts = [];
 
 	function initVideoPlayer() {
 
@@ -12,57 +17,61 @@
 
 		$videoPlayer.on('play', function() {
 			console.log('play');
-		});
-		$videoPlayer.on('playing', function() {
-			console.log('playing');
-		});
-		$videoPlayer.on('progress', function() {
-			console.log('progress');
+      setAllTimouts();
 		});
 		$videoPlayer.on('pause', function() {
 			console.log('pause');
-		});
-		$videoPlayer.on('error', function() {
-			console.log('error');
+      clearAllTimeouts();
 		});
 		$videoPlayer.on('ended', function() {
 			console.log('ended');
 		});
-		$videoPlayer.on('waiting', function() {
-			console.log('waiting');
-		});
-		$videoPlayer.on('seeking', function() {
-			console.log('seeking');
-		});
 		$videoPlayer.on('seeked', function() {
 			console.log('seeked');
+      clearAllTimeouts();
+      setAllTimouts();
 		});
 
 		readyCallback();
 
 	}
 
-	function readyCallback() {
-		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
-			videoObj.play(1);
-			$videoPlayer.trigger('play'); // TODO: trigger does not work
-			for (var i = 0; i < subtitles.length; i++) {
-				renderSubtitles(i);
-			}
-		}
-	}
-
-	function renderSubtitles(i) {
-		setTimeout(function() {
-			$subtitleItem.data('subtitle', i);
-			$subtitleItem.html(subtitles[i].text).show();
-		}, subtitles[i].begin);
-		setTimeout(function() {
-			if ($subtitleItem.data('subtitle') === i) {
+	function setSubtitleTimeout(subtitle) {
+    var showttl = videoObj.currentTime*1000 - subtitle.begin,
+      hidettl = videoObj.currentTime*1000 - subtitle.end;
+    if (hidettl < 0) {
+      return;
+    } else if (showttl < 0 && hidettl > 0) {
+      showttl = 0;
+    }
+		timeouts.push(setTimeout(function() {
+			$subtitleItem.data('subtitle', subtitle.id);
+			$subtitleItem.html(subtitle.text).show();
+		}, showttl));
+		timeouts.push(setTimeout(function() {
+			if ($subtitleItem.data('subtitle') === subtitle.id) {
 				$subtitleItem.hide();
 			}
-		}, subtitles[i].end);
+		}, hidettl));
 	}
+
+  function setAllTimouts() {
+    for (var i = 0; i < subtitles.length; i++) {
+      setSubtitleTimeout(subtitles[i]);
+    }
+  }
+
+  function clearAllTimeouts() {
+    while (timeouts.length) {
+      clearTimeout(timeouts.pop());
+    }
+  }
+
+  function readyCallback() {
+		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
+			videoObj.play(1);
+		}
+	}  
 
 	$(document).ready(function() {
 
