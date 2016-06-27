@@ -10,6 +10,8 @@
 
 	function initVideoPlayer() {
 
+		log('initVideoPlayer');
+
 		$videoPlayer = $('#videoplayer');
 		$subtitleItem = $('.subtitle-item');
 		if ($videoPlayer.length) {
@@ -17,18 +19,18 @@
 		}
 
 		$videoPlayer.on('play', function() {
-			console.log('play');
+			log('play');
 			setAllTimouts();
 		});
 		$videoPlayer.on('pause', function() {
-			console.log('pause');
+			log('pause');
 			clearAllTimeouts();
 		});
 		$videoPlayer.on('ended', function() {
-			console.log('ended');
+			log('ended');
 		});
 		$videoPlayer.on('seeked', function() {
-			console.log('seeked');
+			log('seeked');
 			clearAllTimeouts();
 			setAllTimouts();
 		});

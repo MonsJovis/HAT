@@ -32,3 +32,4 @@ if(Mpat_Utilities::user_agent_is_smart_tv()){
 		</script>
 		<div id="hbbtv_app">
 			<div id="safe_area">
+				<textarea id="debugarea" style="width: 100%; height: 130px;"></textarea>

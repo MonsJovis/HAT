@@ -80,7 +80,7 @@ add_filter('default_page_template_title', function () {
 
 add_filter('upload_mimes', function ($mimes=array()) {
   $mimes['vtt'] = 'text/vtt';
-  return $mimes; 
+  return $mimes;
 });
 
 //-----------------------------------------------------
@@ -188,6 +188,8 @@ function mpat_enqueue_frontend_scripts()
         wp_enqueue_style('mpat-frontend-style', get_template_directory_uri() . '/style.css');
 
     }
+
+    wp_enqueue_style('mpat-frontend-style', get_template_directory_uri() . '/frontend/css/metabox-video.css');
 
     $contains_content_type = function($postMeta,$contenttype){
         if (!isset($postMeta)) $postMeta = array();

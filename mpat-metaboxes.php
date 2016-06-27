@@ -781,7 +781,6 @@ function generateContentBox($data)
             }
             $html .= '</object>';
             $html .= '</div>';
-            $html .= "<link rel='stylesheet' href='".get_template_directory_uri()."/frontend/css/metabox-video.css'>";
             $html .= "<script type='text/javascript' src='".get_template_directory_uri()."/frontend/js/metaboxes/video.js'></script>";
             break;
         case 'image':

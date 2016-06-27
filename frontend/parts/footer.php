@@ -8,7 +8,7 @@ Author URI: 	http://www.fokus.fraunhofer.de/go/fame
 Tags: 			hbbtv
 */
 ?>
-<footer>
+<div class="footer">
 	<?php
 	$locations = get_nav_menu_locations();
 	if (isset($locations['primary-menu']) && !empty($locations['primary-menu'])){
@@ -30,7 +30,7 @@ Tags: 			hbbtv
 			});
 		});
 	</script>
-	<?php 
+	<?php
 	wp_nav_menu( array('container_id' => 'primary-menu-wrap', 'theme_location' => 'primary-menu', 'walker' => new mpat_walker_primary_menu  ) );
 	}
 
@@ -46,4 +46,4 @@ if (isset($locations['footer-menu']) && !empty($locations['footer-menu']) ){
 }
 
 ?>
-</footer>
+</div>
