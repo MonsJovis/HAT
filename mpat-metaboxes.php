@@ -772,9 +772,9 @@ function generateContentBox($data)
               if (strstr($key, 'vtt_') !== false) {
                 $subtitleIndex = substr($key, 4);
                 if ($url = wp_get_attachment_url($value['attachment_id'])) {
-                  $html .= "<param name='subtitles[$subtitleIndex][url]' value='$url'>";
+                  $html .= "<param name='subtitles[$subtitleIndex][url]' value='$url' />";
                   if ($language = $value['language']) {
-                    $html .= "<param name='subtitles[$subtitleIndex][language]' value='$language'>";
+                    $html .= "<param name='subtitles[$subtitleIndex][language]' value='$language' />";
                   }
                 }
               }
