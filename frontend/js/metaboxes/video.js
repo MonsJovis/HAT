@@ -1,5 +1,33 @@
 (function($) {
 
+  function initSubtitleMenu() {
+
+    $('.subtitle-menu-btn').click(function() {
+      $('.subtitle-main-menu').toggle();
+      $('.subtitle-submenu').hide();
+    });
+
+    $('.subtitle-main-menu li').click(function() {
+      var setting = $(this).attr('data-setting');
+      $('.subtitle-main-menu').hide();
+      $('.subtitle-submenu-'+setting).show();
+    });
+
+    $('.subtitle-submenu .back').click(function() {
+      var setting = $(this).attr('data-setting');
+      $('.subtitle-submenu').hide();
+      $('.subtitle-main-menu').show();
+    });
+
+    $('.subtitle-submenu li').click(function() {
+      var settingValue = $(this).attr('data-value');
+      if (settingValue === undefined) return;
+      $(this).parent().find('.fa-check').hide();
+      $(this).find('.fa-check').show();
+    });
+
+  }
+
 	var $videoPlayer,
 		videoObj,
 		$subtitleItem,
@@ -128,6 +156,8 @@
 		}
 
 		setTimeout(initVideoPlayer, 10);
+
+    initSubtitleMenu();
 
 	});
 })(jQuery);

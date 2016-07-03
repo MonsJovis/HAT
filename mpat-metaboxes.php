@@ -780,8 +780,55 @@ function generateContentBox($data)
               }
             }
             $html .= '</object>';
+            ob_start();
+?>
+  <div class="subtitle-menu-outer">
+    <ul class="subtitle-menu subtitle-main-menu" style="display:none">
+      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Subtitles</li>
+      <li data-setting="language" class="first"><i class="fa fa-check" aria-hidden="true"></i> German</li>
+      <li data-setting="font-size">Font size <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+      <li data-setting="font-color">Font color <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+      <li data-setting="background-color">Background color <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+      <li data-setting="position">Position <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+    </ul>
+    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-language" style="display:none">
+      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Language</li>
+      <li data-value=""><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Disabled</li>
+      <li data-value="de"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> German</li>
+      <li data-value="it"><i class="fa fa-check" aria-hidden="true"></i> Italian</li>
+      <li data-value="en"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> English</li>
+    </ul>
+    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-font-size" style="display:none">
+      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Font size</li>
+      <li data-value="small"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Small</li>
+      <li data-value="medium"><i class="fa fa-check" aria-hidden="true"></i> Medium</li>
+      <li data-value="big"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Big</li>
+    </ul>
+    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-font-color" style="display:none">
+      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Font color</li>
+      <li data-value="white"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> White</li>
+      <li data-value="black"><i class="fa fa-check" aria-hidden="true"></i> Black</li>
+      <li data-value="red"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Red</li>
+      <li data-value="yellow"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Yellow</li>
+    </ul>
+    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-background-color" style="display:none">
+      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Background color</li>
+      <li data-value="white"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> None</li>
+      <li data-value="white"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> White</li>
+      <li data-value="black"><i class="fa fa-check" aria-hidden="true"></i> Black</li>
+      <li data-value="red"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Red</li>
+      <li data-value="yellow"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Yellow</li>
+    </ul>
+    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-position" style="display:none">
+      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Position</li>
+      <li data-value="top"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Top</li>
+      <li data-value="bottom"><i class="fa fa-check" aria-hidden="true"></i> Bottom</li>
+    </ul>
+    <a class="subtitle-menu-btn"><i class="fa fa-cogs" aria-hidden="true"></i></a>
+  </div>
+<?php
+            $html .= ob_get_flush();
             $html .= '</div>';
-            $html .= "<script type='text/javascript' src='".get_template_directory_uri()."/frontend/js/metaboxes/video.js'></script>";
             break;
         case 'image':
             $html .= "<div class='contentHeader'>$data[title]</div><div>";

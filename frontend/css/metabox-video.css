@@ -12,3 +12,27 @@
 	text-align: center;
 	z-index: 10;
 }
+
+.subtitle-menu-outer {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	background-color: #000;
+	color: #FFF;
+}
+.subtitle-menu-btn {
+	color: #fff;
+	float: right;
+	padding: 12px;
+	font-size: 18px;
+}
+
+
+.subtitle-menu li {
+	border-bottom: 1px solid #737373;
+	line-height: 34px;
+	padding: 0 4px 0 4px;
+}
+.subtitle-menu li.first {
+	border-top: 1px solid #737373;
+}
