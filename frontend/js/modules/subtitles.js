@@ -16,6 +16,11 @@ function parseSubtitles(data) {
 			times = lines[i].split(" --> ");
 			phrase.begin = toMilliseconds(times[0]);
 			phrase.end = toMilliseconds(times[1]);
+		} else if (/\d\d:\d\d\.\d\d\d.+/.test(lines[i])){
+			lines[i] = lines[i].slice(0, 23);
+			times = lines[i].split(" --> ");
+			phrase.begin = toMilliseconds(times[0]);
+			phrase.end = toMilliseconds(times[1]);
 		} else if ((lines[i] === "\r") || (lines[i] === "\n") || (lines[i] === "")) { //push phrase to subtitles
 			subtitles.push(phrase);
 			j = j + 1;
@@ -37,7 +42,13 @@ function parseSubtitles(data) {
 }
 
 function toMilliseconds(time) {
-	var firstsplit = time.split(":");
-	var secondsplit = firstsplit[2].split(".");
-	return parseInt(firstsplit[0], 10) * 3600000 + parseInt(firstsplit[1], 10) * 60000 + parseInt(secondsplit[0], 10) * 1000 + parseInt(secondsplit[1], 10);
+	if (/\d\d:\d\d:\d\d\.\d\d\d/.test(time)) {
+		var firstsplit = time.split(":");
+		var secondsplit = firstsplit[2].split(".");
+		return parseInt(firstsplit[0], 10) * 3600000 + parseInt(firstsplit[1], 10) * 60000 + parseInt(secondsplit[0], 10) * 1000 + parseInt(secondsplit[1], 10);
+	} else if (/\d\d:\d\d\.\d\d\d/.test(time)) {
+		var firstsplit = time.split(":");
+		var secondsplit = firstsplit[1].split(".");
+		return parseInt(firstsplit[0], 10) * 60000 + parseInt(secondsplit[0], 10) * 1000 + parseInt(secondsplit[1], 10);
+	}
 }
