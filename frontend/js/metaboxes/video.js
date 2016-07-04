@@ -255,8 +255,9 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
-		var showttl = subtitle.begin - videoObj.currentTime * 1000,
-			hidettl = subtitle.end - videoObj.currentTime * 1000;
+    var currentTime = videoObj.currentTime || videoObj.playPosition,
+		  showttl = subtitle.begin - currentTime * 1000,
+			hidettl = subtitle.end - currentTime * 1000;
 		if (hidettl < 0) {
 			return;
 		} else if (showttl < 0 && hidettl > 0) {
