@@ -114,6 +114,7 @@
 			showttl = 0;
 		}
 		timeouts.push(setTimeout(function() {
+			jQuery("#debugarea").append(subtitle.text);
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
 		}, showttl));

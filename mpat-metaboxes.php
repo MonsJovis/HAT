@@ -767,7 +767,7 @@ function generateContentBox($data)
             $subtitleSettings = mpat_get_subtitle_settings($data);
             $html .= "<div style='display:none' class='video-dummy' vid='$data[data]'></div>";
             $html .= '<div class="videoplayer-outer">';
-            $html .= '<div class="subtitle-item">Markus ist doof</div>';
+            $html .= '<div class="subtitle-item"></div>';
             $html .= "<object id='videoplayer' width='100%' height='100%' type='video/mp4' data='$data[data]'>";
             foreach ($data as $key => $value) {
               if (strstr($key, 'vtt_') !== false) {
