@@ -16,32 +16,26 @@
 			switch (e.keyCode) {
 				case VK_RIGHT:
 					e.preventDefault();
-					console.log('right');
           onKeyRight();
 					break;
 				case VK_LEFT:
 					e.preventDefault();
-					console.log('left');
           onKeyLeft();
 					break;
 				case VK_DOWN:
 					e.preventDefault();
-					console.log('down');
           onKeyDown();
 					break;
 				case VK_UP:
 					e.preventDefault();
-					console.log('up');
           onKeyUp();
 					break;
 				case VK_ENTER:
 					e.preventDefault();
-					console.log('enter');
           onKeyEnter();
 					break;
 				case VK_YELLOW:
 					e.preventDefault();
-					console.log('yellow');
           toggleMenu();
 					break;
 			}
@@ -105,7 +99,7 @@
       if (!$menu) return;
       var $selectedLi = $(':focus', $menu).parent();
       if ($menu.hasClass('subtitle-main-menu')) {
-
+        onKeyLeft();
       } else {
         var settingValue = $selectedLi.attr('data-value');
   			if (settingValue === undefined) return;

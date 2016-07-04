@@ -109,7 +109,6 @@ jQuery(document).ready(function($){
 		},
 
 		handleDrop: function(e) {
-			console.log(dragSrcEl);
 	  		if (e.preventDefault) {
 		    	e.preventDefault();
 		    }
@@ -130,7 +129,7 @@ jQuery(document).ready(function($){
 	    	} else {
 	    		par.before(dragSrcEl);
 	    	}
-	    	
+
 	  		return false;
 		},
 
@@ -200,17 +199,13 @@ function saveButtonControlData(url){
 		}
 	});
 
-	console.log(theData);
-	console.log($('#main-menu-button .mpat-button').attr('button-name'));
 	$.ajax({
 		url: url,
 		type: 'POST',
 		data: {items:theData, main_menu_button: $('#main-menu-button .mpat-button').attr('button-name')}
 	}).done(function(){
-		console.log("Data saved");
 		$('#save-notification').stop().show().delay(2000).fadeOut(500);
 	}).fail(function(xhr, status, error) {
-		console.log("Failed to Save");
+
 	});
 }
-
