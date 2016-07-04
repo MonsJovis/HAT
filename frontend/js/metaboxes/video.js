@@ -264,7 +264,7 @@
 			showttl = 0;
 		}
 		timeouts.push(setTimeout(function() {
-			debug(showttl + ': ' + subtitle.text);
+			debug(showttl + ': ' + subtitle.id + ' (' + currentTime + ')');
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
 		}, showttl));
