@@ -170,6 +170,7 @@
 	function initVideoPlayer() {
 
 		log('initVideoPlayer');
+
 		jQuery("#debugarea").append("initVideoPlayer\n");
 
 		$videoPlayer = $('#videoplayer');
@@ -177,6 +178,8 @@
 		if ($videoPlayer.length) {
 			videoObj = $('#videoplayer')[0];
 		}
+
+    jQuery("#debugarea").append("initVideoPlayer 2\n");
 
 		$videoPlayer.on('play', function() {
 			log('play');
@@ -196,6 +199,8 @@
 			clearAllTimeouts();
 			setAllTimouts();
 		});
+
+    jQuery("#debugarea").append("initVideoPlayer 3\n");
 
 		readyCallback();
 
@@ -229,12 +234,14 @@
 	}
 
 	function clearAllTimeouts() {
+    jQuery("#debugarea").append("clearAllTimeouts\n");
 		while (timeouts.length) {
 			clearTimeout(timeouts.pop());
 		}
 	}
 
 	function readyCallback() {
+    jQuery("#debugarea").append("readyCallback\n");
 		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
 			videoObj.play(1);
 			if (isFireHbb) {
