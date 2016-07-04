@@ -265,14 +265,14 @@
 		} else if (showttl < 0 && hidettl > 0) {
 			showttl = 0;
 		}
-    if (subtitle.begin) {
+    if (!isNaN(subtitle.begin)) {
 		  timeouts.push(setTimeout(function() {
   			debug('#' + subtitle.id + ': ' + showttl + '-' + hidettl + ' (currentTime: ' + currentTime + ')');
   			$subtitleItem.data('subtitle', subtitle.id);
   			$subtitleItem.html(subtitle.text).show();
   		}, showttl));
     }
-    if (subtitle.end) {
+    if (!isNaN(subtitle.end)) {
   		timeouts.push(setTimeout(function() {
   			if ($subtitleItem.data('subtitle') === subtitle.id) {
   				$subtitleItem.hide();
