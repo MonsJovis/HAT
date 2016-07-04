@@ -170,7 +170,7 @@
 	function initVideoPlayer() {
 
 		log('initVideoPlayer');
-		jQuery("#debugarea").append("initVideoPlayer");
+		jQuery("#debugarea").append("initVideoPlayer\n");
 
 		$videoPlayer = $('#videoplayer');
 		$subtitleItem = $('.subtitle-item');
@@ -180,10 +180,12 @@
 
 		$videoPlayer.on('play', function() {
 			log('play');
+      jQuery("#debugarea").append("play\n");
 			setAllTimouts();
 		});
 		$videoPlayer.on('pause', function() {
 			log('pause');
+      jQuery("#debugarea").append("pause\n");
 			clearAllTimeouts();
 		});
 		$videoPlayer.on('ended', function() {
@@ -208,7 +210,7 @@
 			showttl = 0;
 		}
 		timeouts.push(setTimeout(function() {
-			jQuery("#debugarea").append(subtitle.text);
+			jQuery("#debugarea").append(subtitle.text + "\n");
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
 		}, showttl));
@@ -220,6 +222,7 @@
 	}
 
 	function setAllTimouts() {
+    jQuery("#debugarea").append("setAllTimouts: " + subtitles.length + " subtitles\n");
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
 		}
