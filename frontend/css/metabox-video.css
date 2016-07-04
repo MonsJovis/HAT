@@ -10,13 +10,15 @@
 	width: 100%;
 	color: #fff;
 	text-align: center;
-	z-index: 10;
+  line-height: 1.4em;
+  z-index: 2;
 }
 
 .subtitle-menu-outer {
 	position: absolute;
 	bottom: 0;
 	right: 0;
+  z-index: 3;
 	background-color: #000;
 	color: #FFF;
 }
@@ -27,12 +29,14 @@
 	font-size: 18px;
 }
 
-
 .subtitle-menu li {
 	border-bottom: 1px solid #737373;
 	line-height: 34px;
 	padding: 0 4px 0 4px;
 }
-.subtitle-menu li.first {
-	border-top: 1px solid #737373;
+.subtitle-submenu .fa-check {
+	display: none;
+}
+.subtitle-submenu .enabled .fa-check {
+	display: inline;
 }

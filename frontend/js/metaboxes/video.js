@@ -1,6 +1,16 @@
 (function($) {
 
+  var settings = {
+    'language': null,
+    'font-size': null,
+    'font-color': null,
+    'background-color': null,
+    'position': null
+  };
+
   function initSubtitleMenu() {
+
+    generateSubtitleStyles();
 
     $('.subtitle-menu-btn').click(function() {
       $('.subtitle-main-menu').toggle();
@@ -22,10 +32,37 @@
     $('.subtitle-submenu li').click(function() {
       var settingValue = $(this).attr('data-value');
       if (settingValue === undefined) return;
-      $(this).parent().find('.fa-check').hide();
-      $(this).find('.fa-check').show();
+      $(this).parent().find('.enabled').removeClass('enabled');
+      $(this).addClass('enabled');
+      setTimeout(generateSubtitleStyles, 100);
     });
 
+  }
+
+  function generateSubtitleStyles() {
+
+    $.each(settings, function(setting, index) {
+      settings[setting] = $('.subtitle-submenu-'+setting + ' .enabled').attr('data-value');
+    });
+		var styles = {
+      color: settings['font-color'],
+      backgroundColor: settings['background-color'],
+      fontSize: null,
+      bottom: settings.position === 'bottom' ? '60px' : 'auto',
+      top: settings.position === 'top' ? '60px' : 'auto',
+    };
+		switch (settings['font-size']) {
+			case 'small':
+				styles.fontSize = '1em';
+				break;
+			case 'medium':
+				styles.fontSize = '1.3em';
+				break;
+			case 'big':
+				styles.fontSize = '1.5em';
+				break;
+		}
+    $('.subtitle-item').css(styles);
   }
 
 	var $videoPlayer,

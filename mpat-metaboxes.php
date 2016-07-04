@@ -513,7 +513,7 @@ function mpat_lang_select($name = 'language', $defaultValue = null) {
   ob_start();
 ?>
   <select name="<?php print $name ?>">
-    <option value=""><?php print __('- Select the language -') ?></option>
+    <option value=""><?php print __('- Select the language -', 'mpat') ?></option>
     <?php foreach ($json->lang as $key => $values): ?>
       <option value="<?php print $key ?>"<?php if ($defaultValue == $key) print ' selected' ?>><?php print $values[0] ?></option>
     <?php endforeach ?>
@@ -764,6 +764,7 @@ function generateContentBox($data)
             $html .= "<script type='text/javascript'>jQuery(document).ready(function($){window.setTimeout( function() { $('#broadcast')[0].bindToCurrentChannel(); }, 10); });</script>";
             break;
         case 'video':
+            $subtitleSettings = mpat_get_subtitle_settings($data);
             $html .= "<div style='display:none' class='video-dummy' vid='$data[data]'></div>";
             $html .= '<div class="videoplayer-outer">';
             $html .= '<div style="display:none" class="subtitle-item"></div>';
@@ -785,49 +786,26 @@ function generateContentBox($data)
   <div class="subtitle-menu-outer">
     <ul class="subtitle-menu subtitle-main-menu" style="display:none">
       <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Subtitles</li>
-      <li data-setting="language" class="first"><i class="fa fa-check" aria-hidden="true"></i> German</li>
-      <li data-setting="font-size">Font size <i class="fa fa-angle-right" aria-hidden="true"></i></li>
-      <li data-setting="font-color">Font color <i class="fa fa-angle-right" aria-hidden="true"></i></li>
-      <li data-setting="background-color">Background color <i class="fa fa-angle-right" aria-hidden="true"></i></li>
-      <li data-setting="position">Position <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+      <?php foreach ($subtitleSettings as $settingKey => $setting): ?>
+        <li data-setting="<?php print $settingKey ?>"><?php print $setting['label'] ?> <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+      <?php endforeach ?>
     </ul>
-    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-language" style="display:none">
-      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Language</li>
-      <li data-value=""><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Disabled</li>
-      <li data-value="de"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> German</li>
-      <li data-value="it"><i class="fa fa-check" aria-hidden="true"></i> Italian</li>
-      <li data-value="en"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> English</li>
-    </ul>
-    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-font-size" style="display:none">
-      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Font size</li>
-      <li data-value="small"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Small</li>
-      <li data-value="medium"><i class="fa fa-check" aria-hidden="true"></i> Medium</li>
-      <li data-value="big"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Big</li>
-    </ul>
-    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-font-color" style="display:none">
-      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Font color</li>
-      <li data-value="white"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> White</li>
-      <li data-value="black"><i class="fa fa-check" aria-hidden="true"></i> Black</li>
-      <li data-value="red"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Red</li>
-      <li data-value="yellow"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Yellow</li>
-    </ul>
-    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-background-color" style="display:none">
-      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Background color</li>
-      <li data-value="white"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> None</li>
-      <li data-value="white"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> White</li>
-      <li data-value="black"><i class="fa fa-check" aria-hidden="true"></i> Black</li>
-      <li data-value="red"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Red</li>
-      <li data-value="yellow"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Yellow</li>
-    </ul>
-    <ul class="subtitle-menu subtitle-submenu subtitle-submenu-position" style="display:none">
-      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Position</li>
-      <li data-value="top"><i class="fa fa-check" aria-hidden="true" style="display:none"></i> Top</li>
-      <li data-value="bottom"><i class="fa fa-check" aria-hidden="true"></i> Bottom</li>
-    </ul>
+    <?php foreach ($subtitleSettings as $settingKey => $setting): ?>
+      <ul class="subtitle-menu subtitle-submenu subtitle-submenu-<?php print $settingKey ?>" style="display:none">
+        <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> <?php print $setting['label'] ?></li>
+        <?php foreach ($setting['values'] as $key => $label): ?>
+          <li data-value="<?php print $key ?>"<?php if ($key == $setting['default']): ?> class="enabled"<?php endif ?>>
+            <i class="fa fa-check" aria-hidden="true"></i>
+            <?php print $label ?>
+          </li>
+        <?php endforeach ?>
+      </ul>
+    <?php endforeach ?>
     <a class="subtitle-menu-btn"><i class="fa fa-cogs" aria-hidden="true"></i></a>
   </div>
 <?php
-            $html .= ob_get_flush();
+            $html .= ob_get_contents();
+            ob_end_clean();
             $html .= '</div>';
             break;
         case 'image':
@@ -901,7 +879,7 @@ function all_types_add_layout_meta_box()
 
         add_meta_box(
             'myplugin_sectionid',
-            __('Design of ' . $current_template, 'myplugin_textdomain'),
+            __('Design of ' . $current_template, 'mpat'),
             'all_types_layout_meta_box_callback',
             $screen
         );
@@ -918,13 +896,76 @@ function all_types_layout_meta_box_callback($post)
 
 }
 
-
-
 function ob_get_clean_json(){
     echo json_encode(ob_get_clean());
 }
 
-    function active($a,$b){
-        if ($a === $b) echo 'active';
+function active($a,$b){
+    if ($a === $b) echo 'active';
+}
+
+function mpat_get_subtitle_settings($postData) {
+  $settings = array(
+    'language' => array(
+      'label' => __('Language', 'mpat'),
+      'values' => array(),
+      'default' => 0
+    ),
+    'font-size' => array(
+      'label' => __('Font size', 'mpat'),
+      'values' => array(
+        'small' => __('Small', 'mpat'),
+        'medium' => __('Medium', 'mpat'),
+        'big' => __('Big', 'mpat')
+      ),
+      'default' => 'medium'
+    ),
+    'font-color' => array(
+      'label' => __('Font color', 'mpat'),
+      'values' => array(
+        'white' => __('White', 'mpat'),
+        'black' => __('Black', 'mpat'),
+        'red' => __('Red', 'mpat'),
+        'yellow' => __('Yellow', 'mpat')
+      ),
+      'default' => 'white'
+    ),
+    'background-color' => array(
+      'label' => __('Background color', 'mpat'),
+      'values' => array(
+        'transparent' => __('Transparent', 'mpat'),
+        'white' => __('White', 'mpat'),
+        'black' => __('Black', 'mpat'),
+        'red' => __('Red', 'mpat'),
+        'yellow' => __('Yellow', 'mpat')
+      ),
+      'default' => 'transparent'
+    ),
+    'position' => array(
+      'label' => __('Position', 'mpat'),
+      'values' => array(
+        'bottom' => __('Bottom', 'mpat'),
+        'top' => __('Top', 'mpat')
+      ),
+      'default' => 'bottom'
+    )
+  );
+  $languagesString = file_get_contents(get_template_directory() . '/assets/languages.json', 'r');
+  $languages = json_decode($languagesString);
+  foreach ($postData as $key => $value) {
+    if (strstr($key, 'vtt_') !== false) {
+      $subtitleIndex = substr($key, 4);
+      if ($url = wp_get_attachment_url($value['attachment_id'])) {
+        if ($language = $value['language']) {
+          $lang = $languages->lang->$language;
+          $settings['language']['values'][$language] = $lang[1];
+        }
+      }
     }
-?>
+  }
+  if (count($settings['language']['values']) > 0) {
+    $firstItem = array_slice($settings['language']['values'], 0, NULL, true);
+    $settings['language']['default'] = key($firstItem);
+  }
+  return $settings;
+}
