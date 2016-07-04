@@ -204,7 +204,7 @@
 		function onPlayStateChange() { // unsupported :-(state, error) {
 			try {
 				debug('state: ' + denotePlaystate(videoObj.playState, videoObj.error) + ' at: ' + (videoObj.playPosition | 0) + '/' + (videoObj.playTime | 0));
-				switch (videoobj.playState) {
+				switch (videoObj.playState) {
 
 					case 1: // PLAYING
 						debug('onPlayStateChange: playing');
