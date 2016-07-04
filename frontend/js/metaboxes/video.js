@@ -1,7 +1,9 @@
 (function($) {
 
   function debug(text) {
-    $("#debugarea").append(text + "\n");
+    $("#debugarea")
+      .append(text + "\n")
+      .scrollTop($("#debugarea")[0].scrollHeight);
   }
 
 	var settings = {
@@ -173,8 +175,6 @@
 
 	function initVideoPlayer() {
 
-		log('initVideoPlayer');
-
 		debug("initVideoPlayer");
 
 		$videoPlayer = $('#videoplayer');
@@ -182,8 +182,6 @@
 		if ($videoPlayer.length) {
 			videoObj = $('#videoplayer')[0];
 		}
-
-    debug("initVideoPlayer 2");
 
 		$videoPlayer.on('play', function() {
 			log('play');
@@ -203,8 +201,6 @@
 			clearAllTimeouts();
 			setAllTimouts();
 		});
-
-    debug("initVideoPlayer 3");
 
 		readyCallback();
 
