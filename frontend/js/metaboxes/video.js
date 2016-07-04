@@ -1,10 +1,10 @@
 (function($) {
 
-  function debug(text) {
-    $("#debugarea")
-      .append(text + "\n")
-      .scrollTop($("#debugarea")[0].scrollHeight);
-  }
+	function debug(text) {
+		$("#debugarea")
+			.append(text + "\n")
+			.scrollTop($("#debugarea")[0].scrollHeight);
+	}
 
 	var settings = {
 		'language': null,
@@ -22,98 +22,98 @@
 			switch (e.keyCode) {
 				case VK_RIGHT:
 					e.preventDefault();
-          onKeyRight();
+					onKeyRight();
 					break;
 				case VK_LEFT:
 					e.preventDefault();
-          onKeyLeft();
+					onKeyLeft();
 					break;
 				case VK_DOWN:
 					e.preventDefault();
-          onKeyDown();
+					onKeyDown();
 					break;
 				case VK_UP:
 					e.preventDefault();
-          onKeyUp();
+					onKeyUp();
 					break;
 				case VK_ENTER:
 					e.preventDefault();
-          onKeyEnter();
+					onKeyEnter();
 					break;
 				case VK_YELLOW:
 					e.preventDefault();
-          toggleMenu();
+					toggleMenu();
 					break;
 			}
 		});
 
-    function getOpenMenuObj() {
-      var $menu = null;
-      $('.subtitle-menu').each(function() {
-        if ($(this).css('display') !== 'none') {
-          $menu = $(this);
-        }
-      });
-      return $menu;
-    }
+		function getOpenMenuObj() {
+			var $menu = null;
+			$('.subtitle-menu').each(function() {
+				if ($(this).css('display') !== 'none') {
+					$menu = $(this);
+				}
+			});
+			return $menu;
+		}
 
-    function toggleMenu() {
-      var $mainMenu = $('.subtitle-main-menu');
-      $mainMenu.toggle();
+		function toggleMenu() {
+			var $mainMenu = $('.subtitle-main-menu');
+			$mainMenu.toggle();
 			$('.subtitle-submenu').hide();
-      if ($mainMenu.css('display') != 'none') {
-        $('[data-setting]', $mainMenu).first().find('a').focus();
-      }
-    }
+			if ($mainMenu.css('display') != 'none') {
+				$('[data-setting]', $mainMenu).first().find('a').focus();
+			}
+		}
 
-    function onKeyDown() {
-      var $menu = getOpenMenuObj();
-      if (!$menu) return;
-      $(':focus', $menu).parent().next().find('a').focus();
-    }
+		function onKeyDown() {
+			var $menu = getOpenMenuObj();
+			if (!$menu) return;
+			$(':focus', $menu).parent().next().find('a').focus();
+		}
 
-    function onKeyUp() {
-      var $menu = getOpenMenuObj();
-      if (!$menu) return;
-      $(':focus', $menu).parent().prev().find('a').focus();
-    }
+		function onKeyUp() {
+			var $menu = getOpenMenuObj();
+			if (!$menu) return;
+			$(':focus', $menu).parent().prev().find('a').focus();
+		}
 
-    function onKeyRight() {
-      var $menu = getOpenMenuObj();
-      if (!$menu) return;
-      if ($menu.hasClass('subtitle-main-menu')) {
-        var $selectedLi = $(':focus', $menu).parent(),
-          setting = $selectedLi.attr('data-setting');
-  			$menu.hide();
-  			$('.subtitle-submenu-' + setting).show().find('li').first().next().find('a').focus();
-      }
-    }
+		function onKeyRight() {
+			var $menu = getOpenMenuObj();
+			if (!$menu) return;
+			if ($menu.hasClass('subtitle-main-menu')) {
+				var $selectedLi = $(':focus', $menu).parent(),
+					setting = $selectedLi.attr('data-setting');
+				$menu.hide();
+				$('.subtitle-submenu-' + setting).show().find('li').first().next().find('a').focus();
+			}
+		}
 
-    function onKeyLeft() {
-      var $menu = getOpenMenuObj();
-      if (!$menu) return;
-      if ($menu.hasClass('subtitle-submenu')) {
-        $menu.hide();
-        var setting = $menu.attr('data-setting');
-        $('.subtitle-main-menu').show();
-        $('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').focus();
-      }
-    }
+		function onKeyLeft() {
+			var $menu = getOpenMenuObj();
+			if (!$menu) return;
+			if ($menu.hasClass('subtitle-submenu')) {
+				$menu.hide();
+				var setting = $menu.attr('data-setting');
+				$('.subtitle-main-menu').show();
+				$('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').focus();
+			}
+		}
 
-    function onKeyEnter() {
-      var $menu = getOpenMenuObj();
-      if (!$menu) return;
-      var $selectedLi = $(':focus', $menu).parent();
-      if ($menu.hasClass('subtitle-main-menu')) {
-        onKeyLeft();
-      } else {
-        var settingValue = $selectedLi.attr('data-value');
-  			if (settingValue === undefined) return;
-  			$selectedLi.parent().find('.enabled').removeClass('enabled');
-  			$selectedLi.addClass('enabled');
-  			generateSubtitleStyles();
-      }
-    }
+		function onKeyEnter() {
+			var $menu = getOpenMenuObj();
+			if (!$menu) return;
+			var $selectedLi = $(':focus', $menu).parent();
+			if ($menu.hasClass('subtitle-main-menu')) {
+				onKeyLeft();
+			} else {
+				var settingValue = $selectedLi.attr('data-value');
+				if (settingValue === undefined) return;
+				$selectedLi.parent().find('.enabled').removeClass('enabled');
+				$selectedLi.addClass('enabled');
+				generateSubtitleStyles();
+			}
+		}
 
 		$('.subtitle-menu-btn').click(toggleMenu);
 
@@ -185,12 +185,12 @@
 
 		$videoPlayer.on('play', function() {
 			log('play');
-      debug("play");
+			debug("play");
 			setAllTimou();
 		});
 		$videoPlayer.on('pause', function() {
 			log('pause');
-      debug("pause");
+			debug("pause");
 			clearAllTimeou();
 		});
 		$videoPlayer.on('ended', function() {
@@ -227,21 +227,21 @@
 	}
 
 	function setAllTimouts() {
-    debug("setAllTimouts: " + subtitles.length + " subtitles");
+		debug("setAllTimouts: " + subtitles.length + " subtitles");
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
 		}
 	}
 
 	function clearAllTimeouts() {
-    debug("clearAllTimeouts");
+		debug("clearAllTimeouts");
 		while (timeouts.length) {
 			clearTimeout(timeouts.pop());
 		}
 	}
 
 	function readyCallback() {
-    debug("readyCallback");
+		debug("readyCallback");
 		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
 			videoObj.play(1);
 			if (isFireHbb) {
@@ -291,14 +291,20 @@
 			}
 		});
 
-    debug('subtitleFiles: ' + subtitleFiles.length);
+		debug('subtitleFiles: ' + subtitleFiles.length);
 
 		if (subtitleFiles[0]) {
-      debug('subtitleFiles[0]: ' + subtitleFiles[0].url);
+			debug('subtitleFiles[0]: ' + subtitleFiles[0].url);
 			$.get(subtitleFiles[0].url, function(data) {
-				subtitles = parseSubtitles(data);
-				readyCallback();
-			}, 'text');
+          debug("ajax: success");
+					subtitles = parseSubtitles(data);
+					readyCallback();
+				}, 'text').fail(function() {
+					debug("ajax: error");
+				})
+				.always(function() {
+					debug("ajax: finished");
+				});
 		}
 
 		setTimeout(initVideoPlayer, 10);
