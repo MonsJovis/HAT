@@ -22,7 +22,6 @@ jQuery(document).ready(function($){
    }
    window.original_send_to_editor = window.send_to_editor;
    window.send_to_editor = function(html) {
-      console.log("send to editor: " + html);
       if(currentMediaUploader){
         if(currentMediaUploader.data("uploadertype") == "redbutton"){
           currentMediaUploader.next().next().attr("value", $(html).attr("src"));
@@ -30,7 +29,7 @@ jQuery(document).ready(function($){
 
           // currentMediaUploader.nextAll("input:first").attr("value", $(html).attr("src"));
           // currentMediaUploader.nextAll("div:first").css("background-image", "url("+$(html).attr("src")+")");
-          
+
         }else if(currentMediaUploader.data("uploadertype") == "360"){
 
         }else{
