@@ -181,15 +181,14 @@
 		$subtitleItem = $('.subtitle-item');
 		if ($videoPlayer.length) {
 			videoObj = $('#videoplayer')[0];
+			videoObj.onPlayStateChange = onPlayStateChange;
 		}
 
 		$videoPlayer.on('play', function() {
-			log('play');
 			debug("play");
 			setAllTimou();
 		});
 		$videoPlayer.on('pause', function() {
-			log('pause');
 			debug("pause");
 			clearAllTimeou();
 		});
@@ -201,6 +200,46 @@
 			clearAllTimeouts();
 			setAllTimouts();
 		});
+
+		function onPlayStateChange() { // unsupported :-(state, error) {
+			try {
+				debug('state: ' + denotePlaystate(video.playState, video.error) + ' at: ' + (video.playPosition | 0) + '/' + (video.playTime | 0));
+				switch (videoobj.playState) {
+
+					case 1: // PLAYING
+						debug('onPlayStateChange: playing');
+						break;
+
+					case 2: // PAUSED
+						debug('onPlayStateChange: paused');
+						break;
+
+					case 4: // BUFFERING
+						debug('onPlayStateChange: buffering');
+						break;
+
+					case 3: // CONNECTING
+						debug('onPlayStateChange: connecting');
+						break;
+
+					case 5: // FINISHED
+						debug('onPlayStateChange: finished');
+						break;
+
+					case 0: // STOPPED
+						debug('onPlayStateChange: stopped');
+						break;
+
+					case 6: // ERROR
+						debug('onPlayStateChange: error');
+						break;
+				}
+
+			} catch (ex) {
+				log('Video::onPlayStateChange caught: ', dumpex(ex));
+			}
+		}
+
 
 		readyCallback();
 
@@ -241,12 +280,7 @@
 	}
 
 	function readyCallback() {
-		debug("readyCallback ");
-    debug($videoPlayer ? '$videoPlayer: true' : '$videoPlayer: false');
-    debug(videoObj ? 'videoObj: true' : 'videoObj: false');
-    debug((videoObj && videoObj.play) ? 'videoObj.play: true' : 'videoObj.play: false');
-    debug(subtitles !== null ? 'subtitles: true' : 'subtitles: false');
-    if ($videoPlayer && videoObj && videoObj.play && subtitles !== null) {
+		if ($videoPlayer && videoObj && videoObj.play && subtitles !== null) {
 			videoObj.play(1);
 			if (isFireHbb) {
 				videoObj.currentTime = 0;
@@ -254,6 +288,28 @@
 			}
 		}
 	}
+
+  function denotePlaystate(state, error) {
+    switch (state) {
+    case 0:
+      return "STOPPED";
+    case 1:
+      return "PLAYING";
+    case 2:
+      return "PAUSED";
+    case 3:
+      return "CONNECTING";
+    case 4:
+      return "BUFFERING";
+    case 5:
+      return "FINISHED";
+    case 6:
+      errorlog("VIDEO ERROR ["+denoteVideoError(error)+"]");
+      return "ERROR ["+denoteVideoError(error)+"]";
+    default:
+      return "Unexpected state code: "+state;
+    }
+  }
 
 	$(document).ready(function() {
 
@@ -295,12 +351,9 @@
 			}
 		});
 
-		debug('subtitleFiles: ' + subtitleFiles.length);
-
 		if (subtitleFiles[0]) {
-			debug('subtitleFiles[0]: ' + subtitleFiles[0].url);
 			$.get(subtitleFiles[0].url, function(data) {
-          debug("ajax: success");
+					debug("ajax: success");
 					subtitles = parseSubtitles(data);
 					readyCallback();
 				}, 'text').fail(function() {
