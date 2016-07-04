@@ -255,6 +255,8 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
+    debug('videoObj.playPosition: ' + videoObj.playPosition);
+    debug('videoObj.currentTime: ' + videoObj.currentTime);
 		var currentTime = isFireHbb ? videoObj.playPosition : videoObj.currentTime * 1000,
       showttl = subtitle.begin - currentTime,
 			hidettl = subtitle.end - currentTime;
