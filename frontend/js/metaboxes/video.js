@@ -267,7 +267,7 @@
 		}
     if (!isNaN(subtitle.begin)) {
 		  timeouts.push(setTimeout(function() {
-  			debug('#' + subtitle.id + ': ' + showttl + '-' + hidettl + ' (currentTime: ' + currentTime + ')');
+  			//debug('#' + subtitle.id + ': ' + showttl + '-' + hidettl + ' (currentTime: ' + currentTime + ')');
   			$subtitleItem.data('subtitle', subtitle.id);
   			$subtitleItem.html(subtitle.text).show();
   		}, showttl));
