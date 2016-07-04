@@ -180,31 +180,31 @@
 		$videoPlayer = $('#videoplayer');
 		$subtitleItem = $('.subtitle-item');
 
-    if ($videoPlayer.length) {
+		if ($videoPlayer.length) {
 			videoObj = $('#videoplayer')[0];
 			videoObj.onPlayStateChange = onPlayStateChange;
 		}
 
-    if (isFireHbb) {
-  		$videoPlayer.on('play', function() {
-  			debug("play");
-  			setAllTimouts();
-  		});
-  		$videoPlayer.on('pause', function() {
-  			debug("pause");
-  			clearAllTimeou();
-  		});
-  		$videoPlayer.on('ended', function() {
-  			log('ended');
-  		});
-  		$videoPlayer.on('seeked', function() {
-  			log('seeked');
-  			clearAllTimeouts();
-  			setAllTimouts();
-  		});
-    } else if (videoObj) {
-      videoObj.onPlayStateChange = onPlayStateChange;
-    }
+		if (isFireHbb) {
+			$videoPlayer.on('play', function() {
+				debug("play");
+				setAllTimouts();
+			});
+			$videoPlayer.on('pause', function() {
+				debug("pause");
+				clearAllTimeou();
+			});
+			$videoPlayer.on('ended', function() {
+				log('ended');
+			});
+			$videoPlayer.on('seeked', function() {
+				log('seeked');
+				clearAllTimeouts();
+				setAllTimouts();
+			});
+		} else if (videoObj) {
+			videoObj.onPlayStateChange = onPlayStateChange;
+		}
 
 		function onPlayStateChange() { // unsupported :-(state, error) {
 			try {
@@ -213,17 +213,17 @@
 
 					case 1: // PLAYING
 						debug('onPlayStateChange: playing');
-            setAllTimouts();
+						setAllTimouts();
 						break;
 
 					case 2: // PAUSED
 						debug('onPlayStateChange: paused');
-            clearAllTimeouts();
+						clearAllTimeouts();
 						break;
 
 					case 4: // BUFFERING
 						debug('onPlayStateChange: buffering');
-            clearAllTimeouts();
+						clearAllTimeouts();
 						break;
 
 					case 3: // CONNECTING
@@ -236,7 +236,7 @@
 
 					case 0: // STOPPED
 						debug('onPlayStateChange: stopped');
-            clearAllTimeouts();
+						clearAllTimeouts();
 						break;
 
 					case 6: // ERROR
@@ -255,8 +255,8 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
-    var currentTime = videoObj.currentTime || videoObj.playPosition,
-		  showttl = subtitle.begin - currentTime * 1000,
+		var currentTime = videoObj.currentTime || videoObj.playPosition,
+			showttl = subtitle.begin - currentTime * 1000,
 			hidettl = subtitle.end - currentTime * 1000;
 		if (hidettl < 0) {
 			return;
@@ -276,7 +276,7 @@
 	}
 
 	function setAllTimouts() {
-    if (!subtitles) return;
+		if (!subtitles) return;
 		debug("setAllTimouts: " + subtitles.length + " subtitles");
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
@@ -300,27 +300,52 @@
 		}
 	}
 
-  function denotePlaystate(state, error) {
-    switch (state) {
-    case 0:
-      return "STOPPED";
-    case 1:
-      return "PLAYING";
-    case 2:
-      return "PAUSED";
-    case 3:
-      return "CONNECTING";
-    case 4:
-      return "BUFFERING";
-    case 5:
-      return "FINISHED";
-    case 6:
-      errorlog("VIDEO ERROR ["+denoteVideoError(error)+"]");
-      return "ERROR ["+denoteVideoError(error)+"]";
-    default:
-      return "Unexpected state code: "+state;
-    }
-  }
+	function denotePlaystate(state, error) {
+		switch (state) {
+			case 0:
+				return "STOPPED";
+			case 1:
+				return "PLAYING";
+			case 2:
+				return "PAUSED";
+			case 3:
+				return "CONNECTING";
+			case 4:
+				return "BUFFERING";
+			case 5:
+				return "FINISHED";
+			case 6:
+				return "ERROR [" + denoteVideoError(error) + "]";
+			default:
+				return "Unexpected state code: " + state;
+		}
+	}
+
+	function denoteVideoError(error) {
+
+		switch (error) {
+			case 0:
+				return "A/V FORMAT NOT SUPPORTED";
+			case 1:
+				return "CANNOT CONNECT TO SERVER OR CONNECTION LOST";
+			case 2:
+				return "UNIDENTIFIED ERROR";
+				// by DAE 1.1 p. 263:
+			case 3:
+				return "INSUFFICIENT RESOURCES";
+			case 4:
+				return "CONTENT CORRUPT OR INVALID";
+			case 5:
+				return "CONTENT NOT AVAILABLE";
+			case 6:
+				return "CONTENT NOT AVAILABLE AT A GIVEN POSITION";
+				// (by ETSI 1.2.1)
+			case 7:
+				return "CONTENT BLOCKED DUE TO PARENTAL CONTROL";
+			default:
+				return "Unexpected error code: " + error;
+		}
+	}
 
 	$(document).ready(function() {
 
