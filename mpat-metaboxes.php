@@ -785,18 +785,20 @@ function generateContentBox($data)
 ?>
   <div class="subtitle-menu-outer">
     <ul class="subtitle-menu subtitle-main-menu" style="display:none">
-      <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Subtitles</li>
+      <li class="back"><a href="javascript:void()"><i class="fa fa-angle-left" aria-hidden="true"></i> Subtitles</a></li>
       <?php foreach ($subtitleSettings as $settingKey => $setting): ?>
-        <li data-setting="<?php print $settingKey ?>"><?php print $setting['label'] ?> <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+        <li data-setting="<?php print $settingKey ?>"><a href="javascript:void()"><?php print $setting['label'] ?> <i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
       <?php endforeach ?>
     </ul>
     <?php foreach ($subtitleSettings as $settingKey => $setting): ?>
-      <ul class="subtitle-menu subtitle-submenu subtitle-submenu-<?php print $settingKey ?>" style="display:none">
-        <li class="back"><i class="fa fa-angle-left" aria-hidden="true"></i> <?php print $setting['label'] ?></li>
+      <ul class="subtitle-menu subtitle-submenu subtitle-submenu-<?php print $settingKey ?>" data-setting="<?php print $settingKey ?>" style="display:none">
+        <li class="back"><a href="javascript:void()"><i class="fa fa-angle-left" aria-hidden="true"></i> <?php print $setting['label'] ?></a></li>
         <?php foreach ($setting['values'] as $key => $label): ?>
           <li data-value="<?php print $key ?>"<?php if ($key == $setting['default']): ?> class="enabled"<?php endif ?>>
-            <i class="fa fa-check" aria-hidden="true"></i>
-            <?php print $label ?>
+            <a href="javascript:void()">
+              <i class="fa fa-check" aria-hidden="true"></i>
+              <?php print $label ?>
+            </a>
           </li>
         <?php endforeach ?>
       </ul>

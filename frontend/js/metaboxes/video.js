@@ -1,56 +1,156 @@
 (function($) {
 
-  var settings = {
-    'language': null,
-    'font-size': null,
-    'font-color': null,
-    'background-color': null,
-    'position': null
-  };
+	var settings = {
+		'language': null,
+		'font-size': null,
+		'font-color': null,
+		'background-color': null,
+		'position': null
+	};
 
-  function initSubtitleMenu() {
+	function initSubtitleMenu() {
 
-    generateSubtitleStyles();
+		generateSubtitleStyles();
 
-    $('.subtitle-menu-btn').click(function() {
-      $('.subtitle-main-menu').toggle();
-      $('.subtitle-submenu').hide();
-    });
+		$(document).keydown(function(e) {
+			switch (e.keyCode) {
+				case VK_RIGHT:
+					e.preventDefault();
+					console.log('right');
+          onKeyRight();
+					break;
+				case VK_LEFT:
+					e.preventDefault();
+					console.log('left');
+          onKeyLeft();
+					break;
+				case VK_DOWN:
+					e.preventDefault();
+					console.log('down');
+          onKeyDown();
+					break;
+				case VK_UP:
+					e.preventDefault();
+					console.log('up');
+          onKeyUp();
+					break;
+				case VK_ENTER:
+					e.preventDefault();
+					console.log('enter');
+          onKeyEnter();
+					break;
+				case VK_YELLOW:
+					e.preventDefault();
+					console.log('yellow');
+          toggleMenu();
+					break;
+			}
+		});
 
-    $('.subtitle-main-menu li').click(function() {
-      var setting = $(this).attr('data-setting');
-      $('.subtitle-main-menu').hide();
-      $('.subtitle-submenu-'+setting).show();
-    });
+    function getOpenMenuObj() {
+      var $menu = null;
+      $('.subtitle-menu').each(function() {
+        if ($(this).css('display') !== 'none') {
+          $menu = $(this);
+        }
+      });
+      return $menu;
+    }
 
-    $('.subtitle-submenu .back').click(function() {
-      var setting = $(this).attr('data-setting');
-      $('.subtitle-submenu').hide();
-      $('.subtitle-main-menu').show();
-    });
+    function toggleMenu() {
+      var $mainMenu = $('.subtitle-main-menu');
+      $mainMenu.toggle();
+			$('.subtitle-submenu').hide();
+      if ($mainMenu.css('display') != 'none') {
+        $('[data-setting]', $mainMenu).first().find('a').focus();
+      }
+    }
 
-    $('.subtitle-submenu li').click(function() {
-      var settingValue = $(this).attr('data-value');
-      if (settingValue === undefined) return;
-      $(this).parent().find('.enabled').removeClass('enabled');
-      $(this).addClass('enabled');
-      setTimeout(generateSubtitleStyles, 100);
-    });
+    function onKeyDown() {
+      var $menu = getOpenMenuObj();
+      if (!$menu) return;
+      $(':focus', $menu).parent().next().find('a').focus();
+    }
 
-  }
+    function onKeyUp() {
+      var $menu = getOpenMenuObj();
+      if (!$menu) return;
+      $(':focus', $menu).parent().prev().find('a').focus();
+    }
 
-  function generateSubtitleStyles() {
+    function onKeyRight() {
+      var $menu = getOpenMenuObj();
+      if (!$menu) return;
+      if ($menu.hasClass('subtitle-main-menu')) {
+        var $selectedLi = $(':focus', $menu).parent(),
+          setting = $selectedLi.attr('data-setting');
+  			$menu.hide();
+  			$('.subtitle-submenu-' + setting).show().find('li').first().next().find('a').focus();
+      }
+    }
 
-    $.each(settings, function(setting, index) {
-      settings[setting] = $('.subtitle-submenu-'+setting + ' .enabled').attr('data-value');
-    });
+    function onKeyLeft() {
+      var $menu = getOpenMenuObj();
+      if (!$menu) return;
+      if ($menu.hasClass('subtitle-submenu')) {
+        $menu.hide();
+        var setting = $menu.attr('data-setting');
+        $('.subtitle-main-menu').show();
+        $('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').focus();
+      }
+    }
+
+    function onKeyEnter() {
+      var $menu = getOpenMenuObj();
+      if (!$menu) return;
+      var $selectedLi = $(':focus', $menu).parent();
+      if ($menu.hasClass('subtitle-main-menu')) {
+
+      } else {
+        var settingValue = $selectedLi.attr('data-value');
+  			if (settingValue === undefined) return;
+  			$selectedLi.parent().find('.enabled').removeClass('enabled');
+  			$selectedLi.addClass('enabled');
+  			generateSubtitleStyles();
+      }
+    }
+
+		$('.subtitle-menu-btn').click(toggleMenu);
+
+		$('.subtitle-main-menu li').click(function() {
+			var setting = $(this).attr('data-setting');
+			$('.subtitle-main-menu').hide();
+			$('.subtitle-submenu-' + setting).show();
+		});
+
+		$('.subtitle-submenu .back').click(function() {
+			var setting = $(this).attr('data-setting');
+			$('.subtitle-submenu').hide();
+			$('.subtitle-main-menu').show();
+		});
+
+		$('.subtitle-submenu li').click(function() {
+			var settingValue = $(this).attr('data-value');
+			if (settingValue === undefined) return;
+			$(this).parent().find('.enabled').removeClass('enabled');
+			$(this).addClass('enabled');
+			setTimeout(generateSubtitleStyles, 100);
+		});
+
+	}
+
+	function generateSubtitleStyles() {
+
+		$.each(settings, function(setting, index) {
+			settings[setting] = $('.subtitle-submenu-' + setting + ' .enabled').attr('data-value');
+		});
 		var styles = {
-      color: settings['font-color'],
-      backgroundColor: settings['background-color'],
-      fontSize: null,
-      bottom: settings.position === 'bottom' ? '60px' : 'auto',
-      top: settings.position === 'top' ? '60px' : 'auto',
-    };
+			color: settings['font-color'],
+			backgroundColor: settings['background-color'],
+			fontSize: null,
+			bottom: settings.position === 'bottom' ? '60px' : 'auto',
+			top: settings.position === 'top' ? '60px' : 'auto',
+		};
 		switch (settings['font-size']) {
 			case 'small':
 				styles.fontSize = '1em';
@@ -62,8 +162,8 @@
 				styles.fontSize = '1.5em';
 				break;
 		}
-    $('.subtitle-item').css(styles);
-  }
+		$('.subtitle-item').css(styles);
+	}
 
 	var $videoPlayer,
 		videoObj,
@@ -138,10 +238,10 @@
 	function readyCallback() {
 		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
 			videoObj.play(1);
-      if (isFireHbb) {
-        videoObj.currentTime = 0;
-        setAllTimouts();
-      }
+			if (isFireHbb) {
+				videoObj.currentTime = 0;
+				setAllTimouts();
+			}
 		}
 	}
 
@@ -194,7 +294,7 @@
 
 		setTimeout(initVideoPlayer, 10);
 
-    initSubtitleMenu();
+		initSubtitleMenu();
 
 	});
 })(jQuery);

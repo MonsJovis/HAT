@@ -34,6 +34,13 @@
 	line-height: 34px;
 	padding: 0 4px 0 4px;
 }
+.subtitle-menu a {
+	display: block;
+  color: #FFF;
+}
+.subtitle-menu a:focus {
+	background-color: grey;
+}
 .subtitle-submenu .fa-check {
 	display: none;
 }
