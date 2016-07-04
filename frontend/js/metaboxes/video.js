@@ -241,8 +241,12 @@
 	}
 
 	function readyCallback() {
-		debug("readyCallback");
-		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
+		debug("readyCallback ");
+    debug($videoPlayer ? '$videoPlayer: true' : '$videoPlayer: false');
+    debug(videoObj ? 'videoObj: true' : 'videoObj: false');
+    debug((videoObj && videoObj.play) ? 'videoObj.play: true' : 'videoObj.play: false');
+    debug(subtitles !== null ? 'subtitles: true' : 'subtitles: false');
+    if ($videoPlayer && videoObj && videoObj.play && subtitles !== null) {
 			videoObj.play(1);
 			if (isFireHbb) {
 				videoObj.currentTime = 0;
