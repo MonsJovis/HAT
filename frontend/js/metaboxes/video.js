@@ -188,7 +188,7 @@
 		if (isFireHbb) {
 			$videoPlayer.on('play', function() {
 				debug("play");
-				setAllTimouts();
+				setAllTimeouts();
 			});
 			$videoPlayer.on('pause', function() {
 				debug("pause");
@@ -200,7 +200,7 @@
 			$videoPlayer.on('seeked', function() {
 				log('seeked');
 				clearAllTimeouts();
-				setAllTimouts();
+				setAllTimeouts();
 			});
 		} else if (videoObj) {
 			videoObj.onPlayStateChange = onPlayStateChange;
@@ -213,7 +213,7 @@
 
 					case 1: // PLAYING
 						debug('onPlayStateChange: playing');
-						setAllTimouts();
+						setAllTimeouts();
 						break;
 
 					case 2: // PAUSED
@@ -264,7 +264,7 @@
 			showttl = 0;
 		}
 		timeouts.push(setTimeout(function() {
-			debug(subtitle.text + "");
+			debug(showttl + ': ' + subtitle.text);
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
 		}, showttl));
@@ -275,9 +275,9 @@
 		}, hidettl));
 	}
 
-	function setAllTimouts() {
+	function setAllTimeouts() {
 		if (!subtitles) return;
-		debug("setAllTimouts: " + subtitles.length + " subtitles");
+		debug("setAllTimeouts: " + subtitles.length + " subtitles");
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
 		}
@@ -295,7 +295,7 @@
 			videoObj.play(1);
 			if (isFireHbb) {
 				videoObj.currentTime = 0;
-				setAllTimouts();
+				setAllTimeouts();
 			}
 		}
 	}
