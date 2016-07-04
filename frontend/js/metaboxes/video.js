@@ -179,27 +179,32 @@
 
 		$videoPlayer = $('#videoplayer');
 		$subtitleItem = $('.subtitle-item');
-		if ($videoPlayer.length) {
+
+    if ($videoPlayer.length) {
 			videoObj = $('#videoplayer')[0];
 			videoObj.onPlayStateChange = onPlayStateChange;
 		}
 
-		$videoPlayer.on('play', function() {
-			debug("play");
-			setAllTimou();
-		});
-		$videoPlayer.on('pause', function() {
-			debug("pause");
-			clearAllTimeou();
-		});
-		$videoPlayer.on('ended', function() {
-			log('ended');
-		});
-		$videoPlayer.on('seeked', function() {
-			log('seeked');
-			clearAllTimeouts();
-			setAllTimouts();
-		});
+    if (isFireHbb) {
+  		$videoPlayer.on('play', function() {
+  			debug("play");
+  			setAllTimouts();
+  		});
+  		$videoPlayer.on('pause', function() {
+  			debug("pause");
+  			clearAllTimeou();
+  		});
+  		$videoPlayer.on('ended', function() {
+  			log('ended');
+  		});
+  		$videoPlayer.on('seeked', function() {
+  			log('seeked');
+  			clearAllTimeouts();
+  			setAllTimouts();
+  		});
+    } else if (videoObj) {
+      videoObj.onPlayStateChange = onPlayStateChange;
+    }
 
 		function onPlayStateChange() { // unsupported :-(state, error) {
 			try {
@@ -208,14 +213,17 @@
 
 					case 1: // PLAYING
 						debug('onPlayStateChange: playing');
+            setAllTimouts();
 						break;
 
 					case 2: // PAUSED
 						debug('onPlayStateChange: paused');
+            clearAllTimeouts();
 						break;
 
 					case 4: // BUFFERING
 						debug('onPlayStateChange: buffering');
+            clearAllTimeouts();
 						break;
 
 					case 3: // CONNECTING
@@ -228,6 +236,7 @@
 
 					case 0: // STOPPED
 						debug('onPlayStateChange: stopped');
+            clearAllTimeouts();
 						break;
 
 					case 6: // ERROR
