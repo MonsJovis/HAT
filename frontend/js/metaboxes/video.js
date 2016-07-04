@@ -203,7 +203,7 @@
 
 		function onPlayStateChange() { // unsupported :-(state, error) {
 			try {
-				debug('state: ' + denotePlaystate(video.playState, video.error) + ' at: ' + (video.playPosition | 0) + '/' + (video.playTime | 0));
+				debug('state: ' + denotePlaystate(videoObj.playState, videoObj.error) + ' at: ' + (videoObj.playPosition | 0) + '/' + (videoObj.playTime | 0));
 				switch (videoobj.playState) {
 
 					case 1: // PLAYING
@@ -236,7 +236,7 @@
 				}
 
 			} catch (ex) {
-				log('Video::onPlayStateChange caught: ', dumpex(ex));
+				debug('Video::onPlayStateChange caught: ' + ex);
 			}
 		}
 
@@ -266,6 +266,7 @@
 	}
 
 	function setAllTimouts() {
+    if (!subtitles) return;
 		debug("setAllTimouts: " + subtitles.length + " subtitles");
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
