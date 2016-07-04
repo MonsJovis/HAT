@@ -255,16 +255,19 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
-		var currentTime = videoObj.currentTime || videoObj.playPosition,
-			showttl = subtitle.begin - currentTime * 1000,
-			hidettl = subtitle.end - currentTime * 1000;
+		var currentTime = videoObj.playPosition;
+    if (currentTime === undefined) {
+      currentTime = videoObj.currentTime * 1000;
+    }
+		var	showttl = subtitle.begin - currentTime,
+			hidettl = subtitle.end - currentTime;
 		if (hidettl < 0) {
 			return;
 		} else if (showttl < 0 && hidettl > 0) {
 			showttl = 0;
 		}
 		timeouts.push(setTimeout(function() {
-			debug(showttl + ': ' + subtitle.id + ' (' + currentTime + ')');
+			debug('#' + subtitle.id + ': ' + showttl + ' (' + currentTime + ')');
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
 		}, showttl));
