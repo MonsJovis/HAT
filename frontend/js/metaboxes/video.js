@@ -1,5 +1,9 @@
 (function($) {
 
+  function debug(text) {
+    $("#debugarea").append(text + "\n");
+  }
+
 	var settings = {
 		'language': null,
 		'font-size': null,
@@ -171,7 +175,7 @@
 
 		log('initVideoPlayer');
 
-		jQuery("#debugarea").append("initVideoPlayer\n");
+		debug("initVideoPlayer");
 
 		$videoPlayer = $('#videoplayer');
 		$subtitleItem = $('.subtitle-item');
@@ -179,17 +183,17 @@
 			videoObj = $('#videoplayer')[0];
 		}
 
-    jQuery("#debugarea").append("initVideoPlayer 2\n");
+    debug("initVideoPlayer 2");
 
 		$videoPlayer.on('play', function() {
 			log('play');
-      jQuery("#debugarea").append("play\n");
-			setAllTimouts();
+      debug("play");
+			setAllTimou();
 		});
 		$videoPlayer.on('pause', function() {
 			log('pause');
-      jQuery("#debugarea").append("pause\n");
-			clearAllTimeouts();
+      debug("pause");
+			clearAllTimeou();
 		});
 		$videoPlayer.on('ended', function() {
 			log('ended');
@@ -200,7 +204,7 @@
 			setAllTimouts();
 		});
 
-    jQuery("#debugarea").append("initVideoPlayer 3\n");
+    debug("initVideoPlayer 3");
 
 		readyCallback();
 
@@ -215,7 +219,7 @@
 			showttl = 0;
 		}
 		timeouts.push(setTimeout(function() {
-			jQuery("#debugarea").append(subtitle.text + "\n");
+			debug(subtitle.text + "");
 			$subtitleItem.data('subtitle', subtitle.id);
 			$subtitleItem.html(subtitle.text).show();
 		}, showttl));
@@ -227,21 +231,21 @@
 	}
 
 	function setAllTimouts() {
-    jQuery("#debugarea").append("setAllTimouts: " + subtitles.length + " subtitles\n");
+    debug("setAllTimouts: " + subtitles.length + " subtitles");
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
 		}
 	}
 
 	function clearAllTimeouts() {
-    jQuery("#debugarea").append("clearAllTimeouts\n");
+    debug("clearAllTimeouts");
 		while (timeouts.length) {
 			clearTimeout(timeouts.pop());
 		}
 	}
 
 	function readyCallback() {
-    jQuery("#debugarea").append("readyCallback\n");
+    debug("readyCallback");
 		if ($videoPlayer && videoObj && videoObj.play && subtitles) {
 			videoObj.play(1);
 			if (isFireHbb) {
@@ -291,7 +295,10 @@
 			}
 		});
 
+    debug('subtitleFiles: ' + subtitleFiles.length);
+
 		if (subtitleFiles[0]) {
+      debug('subtitleFiles[0]: ' + subtitleFiles[0].url);
 			$.get(subtitleFiles[0].url, function(data) {
 				subtitles = parseSubtitles(data);
 				readyCallback();
