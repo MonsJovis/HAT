@@ -1,4 +1,5 @@
 function parseSubtitles(data) {
+	if (!data) {jQuery("#debugarea").append("there's is no data");}
 	var subtitles = [];
 	var lines = data.split("\n");
 	var j = 1; //phrases counter
@@ -38,6 +39,7 @@ function parseSubtitles(data) {
 			}
 		}
 	}
+	if (!subtitles) {jQuery("#debugarea").append("there're no subtitles");}
 	return subtitles;
 }
 

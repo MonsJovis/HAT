@@ -11,5 +11,4 @@ Tags: 			hbbtv
 	<div id="header">
 		<div id="title"><?php bloginfo( 'description' ); ?></div>
 		<div id="logo" style='background-image: url(<?php echo get_theme_mod('logo_image'); ?>)'></div>
-		<div id="debugIt" style="color:red; display: block;"> debug </div>;
 	</div>

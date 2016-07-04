@@ -76,6 +76,7 @@
 	function initVideoPlayer() {
 
 		log('initVideoPlayer');
+		jQuery("#debugarea").append("initVideoPlayer");
 
 		$videoPlayer = $('#videoplayer');
 		$subtitleItem = $('.subtitle-item');
