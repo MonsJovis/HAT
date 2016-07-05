@@ -88,10 +88,14 @@
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
 			if ($menu.hasClass('subtitle-main-menu')) {
+        debug('focus element: ' + $(':focus', $menu).length);
 				var $selectedLi = $(':focus', $menu).parent(),
 					setting = $selectedLi.attr('data-setting');
+        debug('setting: ' + setting);
 				$menu.hide();
+        debug('after menu hide');
 				$('.subtitle-submenu-' + setting).show().find('li').first().next().find('a').focus();
+        debug('after focus');
 			}
 		}
 
