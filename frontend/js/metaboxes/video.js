@@ -279,8 +279,7 @@
 	}
 
 	function setAllTimeouts() {
-    debug('setAllTimeouts');
-    debug('setAllTimeouts: ' + (subtitles ? 'true' : 'false'));
+    debug('setAllTimeouts: subitles is ' + typeof(subtitles));
 		if (!subtitles) return;
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
@@ -296,6 +295,7 @@
 	function readyCallback() {
 		if ($videoPlayer && videoObj && videoObj.play && subtitles !== null) {
 			videoObj.play(1);
+      debug('readyCallback: play()');
 			if (isFireHbb) {
 				videoObj.currentTime = 0;
 				setAllTimeouts();
