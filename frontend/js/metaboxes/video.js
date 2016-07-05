@@ -347,7 +347,8 @@
 
 	$(document).ready(function() {
 
-		var firAttrs = ['firetv-fullscreen',
+		var firAttrs = [
+      'firetv-fullscreen',
 			'firetv-tvimage-display',
 			'firetv-margin-display',
 			'firetv-scaling',
