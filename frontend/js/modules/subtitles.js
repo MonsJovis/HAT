@@ -1,3 +1,9 @@
+function debug(text) {
+	jQuery("#debugarea")
+		.append(text + "\n")
+		.scrollTop(jQuery("#debugarea")[0].scrollHeight);
+}
+
 function parseSubtitles(data) {
 	if (!data) {jQuery("#debugarea").append("there's is no data");}
 	var subtitles = [];

@@ -1,11 +1,5 @@
 (function($) {
 
-	function debug(text) {
-		$("#debugarea")
-			.append(text + "\n")
-			.scrollTop($("#debugarea")[0].scrollHeight);
-	}
-
 	var settings = {
 		'language': null,
 		'font-size': null,
