@@ -48,6 +48,10 @@
 	display: inline;
 	height: 25px;
 }
-.subtitle-menu .subtitle-menu-arrow{
+.subtitle-menu .arrow-right{
 	height: 15px;
+}
+.subtitle-menu .arrow-left{
+	height: 15px;
+	transform:rotate(180deg);
 }
