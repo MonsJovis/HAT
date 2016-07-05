@@ -11,18 +11,22 @@ function parseSubtitles(data) {
 	};
 	for (var i = 2; i < lines.length; i++) { //lines counter
 		if (parseInt(lines[i], 10) == j) { //start new phrase
+			debug(lines[i]);
 			continue;
 		} else if (/\d\d:\d\d:\d\d\.\d\d\d.+/.test(lines[i])) { //push begin and end
+			debug(lines[i]);
 			lines[i] = lines[i].slice(0, 29);
 			times = lines[i].split(" --> ");
 			phrase.begin = toMilliseconds(times[0]);
 			phrase.end = toMilliseconds(times[1]);
 		} else if (/\d\d:\d\d\.\d\d\d.+/.test(lines[i])){
+			debug(lines[i]);
 			lines[i] = lines[i].slice(0, 23);
 			times = lines[i].split(" --> ");
 			phrase.begin = toMilliseconds(times[0]);
 			phrase.end = toMilliseconds(times[1]);
 		} else if ((lines[i] === "\r") || (lines[i] === "\n") || (lines[i] === "")) { //push phrase to subtitles
+			debug(lines[i]);
 			subtitles.push(phrase);
 			j = j + 1;
 			phrase = {
@@ -32,6 +36,7 @@ function parseSubtitles(data) {
 				text: null
 			};
 		} else { //push text
+			debug(lines[i]);
 			if (phrase.text === null) {
 				phrase.text = lines[i];
 			} else {
