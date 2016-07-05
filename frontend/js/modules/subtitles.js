@@ -1,7 +1,9 @@
 function debug(text) {
-	jQuery("#debugarea")
+	var $debug = jQuery("#debugarea");
+	if (!$debug.length) return;
+	$debug
 		.append(text + "\n")
-		.scrollTop(jQuery("#debugarea")[0].scrollHeight);
+		.scrollTop($debug[0].scrollHeight);
 }
 
 function parseSubtitles(data) {
