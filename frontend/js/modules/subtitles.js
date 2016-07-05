@@ -13,7 +13,7 @@ function parseSubtitles(data) {
 		if (parseInt(lines[i], 10) == j) { //start new phrase
 			continue;
 		} else if (/\d\d:\d\d:\d\d\.\d\d\d.+/.test(lines[i])) { //push begin and end
-			lines[i] = lines[i].slice(0, 28);
+			lines[i] = lines[i].slice(0, 29);
 			times = lines[i].split(" --> ");
 			phrase.begin = toMilliseconds(times[0]);
 			phrase.end = toMilliseconds(times[1]);
