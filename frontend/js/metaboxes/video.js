@@ -107,9 +107,9 @@
 		function onKeyEnter() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
-			var $selectedLi = $(':focus', $menu).parent();
+			var $selectedLi = $('.focus', $menu).parent();
 			if ($menu.hasClass('subtitle-main-menu')) {
-				onKeyLeft();
+				onKeyRight();
 			} else {
 				var settingValue = $selectedLi.attr('data-value');
 				if (settingValue === undefined) return;

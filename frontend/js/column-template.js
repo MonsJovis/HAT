@@ -20,16 +20,16 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	//Text Box 
+	//Text Box
 	$('.navigable[data-type="text"]').navUp(function(){
-		$(this).children()[1].scrollTop-=20;			
+		$(this).children()[1].scrollTop-=20;
 	}).navDown(function(){
 		$(this).children()[1].scrollTop+=20;
 	});
 
 	//Scribble Box
 	$('.navigable[data-type="scribble"]').navUp(function(){
-		scribble.scroll(-1);			
+		scribble.scroll(-1);
 	}).navDown(function(){
 		scribble.scroll(1);
 	}).navEnter(function(){
@@ -145,6 +145,13 @@ jQuery(document).ready(function($){
 
 	//Video Box
 	$('.navigable[data-type="video"]').navEnter(function(){
+    var $subtitleMenu = null;
+    $('.subtitle-menu').each(function() {
+      if ($(this).css('display') !== 'none') {
+        $subtitleMenu = $(this);
+      }
+    });
+    if ($subtitleMenu) return;
 		var content = $('#videoplayer');
 		if(!content.hasClass('fullscreen')){
 			content.addClass('fullscreen');
@@ -206,5 +213,3 @@ jQuery(document).ready(function($){
 
 
 });
-
-
