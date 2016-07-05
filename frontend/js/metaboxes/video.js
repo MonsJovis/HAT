@@ -67,34 +67,41 @@
 			var $mainMenu = $('.subtitle-main-menu');
 			$mainMenu.toggle();
 			$('.subtitle-submenu').hide();
-			if ($mainMenu.css('display') != 'none') {
-				$('[data-setting]', $mainMenu).first().find('a').focus();
+			if ($mainMenu.css('display') !== 'none') {
+				$('[data-setting]', $mainMenu).first().find('a').addClass('focus');
 			}
 		}
 
 		function onKeyDown() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
-			$(':focus', $menu).parent().next().find('a').focus();
+      var $focusedElement = $('.focus', $menu);
+      if ($focusedElement.parent().next().length) {
+			  $focusedElement.removeClass('focus').parent().next().find('a').addClass('focus');
+      }
 		}
 
 		function onKeyUp() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
-			$(':focus', $menu).parent().prev().find('a').focus();
-		}
+      var $focusedElement = $('.focus', $menu);
+      if ($focusedElement.parent().prev().length) {
+			  $focusedElement.removeClass('focus').parent().prev().find('a').addClass('focus');
+      }
+    }
 
 		function onKeyRight() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
 			if ($menu.hasClass('subtitle-main-menu')) {
-        debug('focus element: ' + $(':focus', $menu).length);
-				var $selectedLi = $(':focus', $menu).parent(),
-					setting = $selectedLi.attr('data-setting');
+        debug('focus element: ' + $('.focus', $menu).length);
+				var $selectedLi = $('.focus', $menu).parent(),
+					setting = $selectedLi.attr('data-setting'),
+          $submenu = $('.subtitle-submenu-' + setting);
         debug('setting: ' + setting);
 				$menu.hide();
         debug('after menu hide');
-				$('.subtitle-submenu-' + setting).show().find('li').first().next().find('a').focus();
+				$submenu.show().find('li').first().next().find('a').addClass('focus');
         debug('after focus');
 			}
 		}
