@@ -57,7 +57,7 @@
 			$('.subtitle-submenu').hide();
 			if ($mainMenu.css('display') !== 'none') {
 				$('.focus', $mainMenu).removeClass('focus');
-				$('[data-setting]', $mainMenu).first().find('a').addClass('focus');
+				$('[data-setting]', $mainMenu).first().addClass('focus');
 			}
 		}
 
@@ -65,8 +65,8 @@
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
 			var $focusedElement = $('.focus', $menu);
-			if ($focusedElement.parent().next().length) {
-				$focusedElement.removeClass('focus').parent().next().find('a').addClass('focus');
+			if ($focusedElement.next().length) {
+				$focusedElement.removeClass('focus').next().addClass('focus');
 			}
 		}
 
@@ -74,8 +74,8 @@
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
 			var $focusedElement = $('.focus', $menu);
-			if ($focusedElement.parent().prev().length) {
-				$focusedElement.removeClass('focus').parent().prev().find('a').addClass('focus');
+			if ($focusedElement.prev().length) {
+				$focusedElement.removeClass('focus').prev().addClass('focus');
 			}
 		}
 
@@ -83,12 +83,12 @@
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
 			if ($menu.hasClass('subtitle-main-menu')) {
-				var $selectedLi = $('.focus', $menu).parent(),
+				var $selectedLi = $('.focus', $menu),
 					setting = $selectedLi.attr('data-setting'),
 					$submenu = $('.subtitle-submenu-' + setting);
 				$menu.hide();
 				$('.focus', $menu).removeClass('focus');
-				$submenu.show().find('li').first().next().find('a').addClass('focus');
+				$submenu.show().find('li').first().next().addClass('focus');
 			}
 		}
 
@@ -100,7 +100,7 @@
         $('.subtitle-main-menu').show();
 				var setting = $menu.attr('data-setting');
         if (setting) {
-				  $('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').addClass('focus');
+				  $('.subtitle-main-menu [data-setting="' + setting + '"]').first().addClass('focus');
         }
       }
 		}
@@ -111,7 +111,7 @@
 			if ($menu.hasClass('subtitle-main-menu')) {
 				onKeyRight();
 			} else {
-        var $selectedLi = $('.focus', $menu).parent(),
+        var $selectedLi = $('.focus', $menu),
           settingValue = $selectedLi.attr('data-value');
 				if (settingValue) {
           $selectedLi.parent().find('.enabled').removeClass('enabled');

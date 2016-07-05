@@ -22,29 +22,20 @@
 	background-color: #000;
 	color: #FFF;
 }
-.subtitle-menu-btn {
-	color: #fff;
-	float: right;
-	padding: 12px;
-	font-size: 18px;
-}
 
 .subtitle-menu li {
 	border-bottom: 1px solid #414141;
+	color: #FFF;
 	line-height: 34px;
 	padding: 0 4px 0 4px;
-}
-.subtitle-menu a {
-	display: block;
-  color: #FFF;
 }
 .subtitle-menu .focus {
 	background-color: #414141;
 }
-.subtitle-submenu .fa-check {
+.subtitle-submenu .icon-checked {
 	display: none;
 }
-.subtitle-submenu .enabled .fa-check {
+.subtitle-submenu .enabled .icon-checked {
 	display: inline;
 	height: 25px;
 }
@@ -53,5 +44,5 @@
 }
 .subtitle-menu .arrow-left{
 	height: 15px;
-	transform:rotate(180deg);
+	transform: rotate(-180deg);
 }
