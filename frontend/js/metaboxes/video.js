@@ -32,7 +32,6 @@
 					break;
 				case VK_ENTER:
 					e.preventDefault();
-					debug('keydown: ENTER');
 					onKeyEnter();
 					break;
 				case VK_YELLOW:
@@ -98,48 +97,31 @@
 			if (!$menu) return;
 			if ($menu.hasClass('subtitle-submenu')) {
 				$menu.hide();
+        $('.subtitle-main-menu').show();
 				var setting = $menu.attr('data-setting');
-				$('.subtitle-main-menu').show();
-				$('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').addClass('focus');
-			}
+        if (setting) {
+				  $('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').addClass('focus');
+        }
+      }
 		}
 
 		function onKeyEnter() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
-			var $selectedLi = $('.focus', $menu).parent();
 			if ($menu.hasClass('subtitle-main-menu')) {
 				onKeyRight();
 			} else {
-				var settingValue = $selectedLi.attr('data-value');
-				if (settingValue === undefined) return;
-				$selectedLi.parent().find('.enabled').removeClass('enabled');
-				$selectedLi.addClass('enabled');
-				generateSubtitleStyles();
+        var $selectedLi = $('.focus', $menu).parent(),
+          settingValue = $selectedLi.attr('data-value');
+				if (settingValue) {
+          $selectedLi.parent().find('.enabled').removeClass('enabled');
+        	$selectedLi.addClass('enabled');
+  				generateSubtitleStyles();
+        } else {
+          onKeyLeft();
+        }
 			}
 		}
-
-		$('.subtitle-menu-btn').click(toggleMenu);
-
-		$('.subtitle-main-menu li').click(function() {
-			var setting = $(this).attr('data-setting');
-			$('.subtitle-main-menu').hide();
-			$('.subtitle-submenu-' + setting).show();
-		});
-
-		$('.subtitle-submenu .back').click(function() {
-			var setting = $(this).attr('data-setting');
-			$('.subtitle-submenu').hide();
-			$('.subtitle-main-menu').show();
-		});
-
-		$('.subtitle-submenu li').click(function() {
-			var settingValue = $(this).attr('data-value');
-			if (settingValue === undefined) return;
-			$(this).parent().find('.enabled').removeClass('enabled');
-			$(this).addClass('enabled');
-			setTimeout(generateSubtitleStyles, 100);
-		});
 
 	}
 
