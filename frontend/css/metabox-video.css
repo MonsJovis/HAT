@@ -30,7 +30,7 @@
 }
 
 .subtitle-menu li {
-	border-bottom: 1px solid #737373;
+	border-bottom: 1px solid #414141;
 	line-height: 34px;
 	padding: 0 4px 0 4px;
 }
@@ -39,11 +39,15 @@
   color: #FFF;
 }
 .subtitle-menu .focus {
-	background-color: grey;
+	background-color: #414141;
 }
 .subtitle-submenu .fa-check {
 	display: none;
 }
 .subtitle-submenu .enabled .fa-check {
 	display: inline;
+	height: 25px;
+}
+.subtitle-menu .subtitle-menu-arrow{
+	height: 15px;
 }
