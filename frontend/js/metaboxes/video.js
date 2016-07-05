@@ -293,7 +293,7 @@
 	}
 
 	function readyCallback() {
-		if ($videoPlayer && videoObj && videoObj.play && subtitles !== null) {
+		if ($videoPlayer && videoObj && videoObj.play && typeof(subtitles) === 'object') {
 			videoObj.play(1);
       debug('readyCallback: play()');
 			if (isFireHbb) {
