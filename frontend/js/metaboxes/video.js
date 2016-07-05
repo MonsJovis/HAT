@@ -279,6 +279,8 @@
 	}
 
 	function setAllTimeouts() {
+    debug('setAllTimeouts');
+    debug('setAllTimeouts: ' + (subtitles ? 'true' : 'false'));
 		if (!subtitles) return;
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
