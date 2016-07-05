@@ -296,6 +296,7 @@
 		if ($videoPlayer && videoObj && videoObj.play && typeof(subtitles) === 'object') {
 			videoObj.play(1);
       debug('readyCallback: play()');
+      debug('readyCallback: subitles is ' + typeof(subtitles));
 			if (isFireHbb) {
 				videoObj.currentTime = 0;
 				setAllTimeouts();
