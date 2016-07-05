@@ -32,7 +32,7 @@
 					break;
 				case VK_ENTER:
 					e.preventDefault();
-          debug('keydown: ENTER');
+					debug('keydown: ENTER');
 					onKeyEnter();
 					break;
 				case VK_YELLOW:
@@ -57,7 +57,7 @@
 			$mainMenu.toggle();
 			$('.subtitle-submenu').hide();
 			if ($mainMenu.css('display') !== 'none') {
-        $('.focus', $mainMenu).removeClass('focus');
+				$('.focus', $mainMenu).removeClass('focus');
 				$('[data-setting]', $mainMenu).first().find('a').addClass('focus');
 			}
 		}
@@ -65,20 +65,20 @@
 		function onKeyDown() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
-      var $focusedElement = $('.focus', $menu);
-      if ($focusedElement.parent().next().length) {
-			  $focusedElement.removeClass('focus').parent().next().find('a').addClass('focus');
-      }
+			var $focusedElement = $('.focus', $menu);
+			if ($focusedElement.parent().next().length) {
+				$focusedElement.removeClass('focus').parent().next().find('a').addClass('focus');
+			}
 		}
 
 		function onKeyUp() {
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
-      var $focusedElement = $('.focus', $menu);
-      if ($focusedElement.parent().prev().length) {
-			  $focusedElement.removeClass('focus').parent().prev().find('a').addClass('focus');
-      }
-    }
+			var $focusedElement = $('.focus', $menu);
+			if ($focusedElement.parent().prev().length) {
+				$focusedElement.removeClass('focus').parent().prev().find('a').addClass('focus');
+			}
+		}
 
 		function onKeyRight() {
 			var $menu = getOpenMenuObj();
@@ -86,9 +86,9 @@
 			if ($menu.hasClass('subtitle-main-menu')) {
 				var $selectedLi = $('.focus', $menu).parent(),
 					setting = $selectedLi.attr('data-setting'),
-          $submenu = $('.subtitle-submenu-' + setting);
+					$submenu = $('.subtitle-submenu-' + setting);
 				$menu.hide();
-        $('.focus', $menu).removeClass('focus');
+				$('.focus', $menu).removeClass('focus');
 				$submenu.show().find('li').first().next().find('a').addClass('focus');
 			}
 		}
@@ -100,7 +100,7 @@
 				$menu.hide();
 				var setting = $menu.attr('data-setting');
 				$('.subtitle-main-menu').show();
-				$('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').focus();
+				$('.subtitle-main-menu [data-setting="' + setting + '"]').first().find('a').addClass('focus');
 			}
 		}
 
@@ -247,7 +247,6 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
-    debug('setSubtitleTimeout');
 		var currentTime = !isFireHbb ? videoObj.playPosition : videoObj.currentTime * 1000,
 			showttl = subtitle.begin - currentTime,
 			hidettl = subtitle.end - currentTime;
@@ -256,7 +255,6 @@
 		} else if (showttl < 0 && hidettl > 0) {
 			showttl = 0;
 		}
-    debug('#' + subtitle.id + ': ' + showttl + '-' + hidettl + ' (' + currentTime + ', ' + showttl + ', ' + hidettl + ')');
 		if (!isNaN(showttl)) {
 			timeouts.push(setTimeout(function() {
 				$subtitleItem.data('subtitle', subtitle.id);
@@ -273,7 +271,6 @@
 	}
 
 	function setAllTimeouts() {
-    debug('setAllTimeouts: subitles is ' + typeof(subtitles));
 		if (!subtitles) return;
 		for (var i = 0; i < subtitles.length; i++) {
 			setSubtitleTimeout(subtitles[i]);
@@ -289,8 +286,6 @@
 	function readyCallback() {
 		if ($videoPlayer && videoObj && videoObj.play && typeof(subtitles) === 'object') {
 			videoObj.play(1);
-      debug('readyCallback: play()');
-      debug('readyCallback: subitles is ' + typeof(subtitles));
 			if (isFireHbb) {
 				videoObj.currentTime = 0;
 				setAllTimeouts();
@@ -348,7 +343,7 @@
 	$(document).ready(function() {
 
 		var firAttrs = [
-      'firetv-fullscreen',
+			'firetv-fullscreen',
 			'firetv-tvimage-display',
 			'firetv-margin-display',
 			'firetv-scaling',
