@@ -22,22 +22,18 @@
 			switch (e.keyCode) {
 				case VK_RIGHT:
 					e.preventDefault();
-          debug('keydown: RIGHT');
 					onKeyRight();
 					break;
 				case VK_LEFT:
 					e.preventDefault();
-          debug('keydown: LEFT');
 					onKeyLeft();
 					break;
 				case VK_DOWN:
 					e.preventDefault();
-          debug('keydown: DOWN');
 					onKeyDown();
 					break;
 				case VK_UP:
 					e.preventDefault();
-          debug('keydown: UP');
 					onKeyUp();
 					break;
 				case VK_ENTER:
@@ -47,7 +43,6 @@
 					break;
 				case VK_YELLOW:
 					e.preventDefault();
-          debug('keydown: YELLOW');
 					toggleMenu();
 					break;
 			}
@@ -68,6 +63,7 @@
 			$mainMenu.toggle();
 			$('.subtitle-submenu').hide();
 			if ($mainMenu.css('display') !== 'none') {
+        $('.focus', $mainMenu).removeClass('focus');
 				$('[data-setting]', $mainMenu).first().find('a').addClass('focus');
 			}
 		}
@@ -94,15 +90,12 @@
 			var $menu = getOpenMenuObj();
 			if (!$menu) return;
 			if ($menu.hasClass('subtitle-main-menu')) {
-        debug('focus element: ' + $('.focus', $menu).length);
 				var $selectedLi = $('.focus', $menu).parent(),
 					setting = $selectedLi.attr('data-setting'),
           $submenu = $('.subtitle-submenu-' + setting);
-        debug('setting: ' + setting);
 				$menu.hide();
-        debug('after menu hide');
+        $('.focus', $menu).removeClass('focus');
 				$submenu.show().find('li').first().next().find('a').addClass('focus');
-        debug('after focus');
 			}
 		}
 
