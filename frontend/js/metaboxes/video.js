@@ -195,15 +195,13 @@
 
 		if (isFireHbb) {
 			$videoPlayer.on('play', function() {
-				debug("play");
 				setAllTimeouts();
 			});
 			$videoPlayer.on('pause', function() {
-				debug("pause");
-				clearAllTimeou();
+				setAllTimeouts();
 			});
 			$videoPlayer.on('ended', function() {
-				log('ended');
+				setAllTimeouts();
 			});
 			$videoPlayer.on('seeked', function() {
 				log('seeked');
@@ -255,6 +253,7 @@
 	}
 
 	function setSubtitleTimeout(subtitle) {
+    debug('setSubtitleTimeout');
 		var currentTime = !isFireHbb ? videoObj.playPosition : videoObj.currentTime * 1000,
 			showttl = subtitle.begin - currentTime,
 			hidettl = subtitle.end - currentTime;
@@ -263,7 +262,7 @@
 		} else if (showttl < 0 && hidettl > 0) {
 			showttl = 0;
 		}
-		debug('#' + subtitle.id + ': ' + showttl + '-' + hidettl + ' (' + currentTime + ', ' + showttl + ', ' + hidettl + ')');
+    debug('#' + subtitle.id + ': ' + showttl + '-' + hidettl + ' (' + currentTime + ', ' + showttl + ', ' + hidettl + ')');
 		if (!isNaN(showttl)) {
 			timeouts.push(setTimeout(function() {
 				$subtitleItem.data('subtitle', subtitle.id);

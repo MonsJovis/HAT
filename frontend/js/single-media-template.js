@@ -298,9 +298,7 @@ jQuery(document).ready(function($){
         refreshCloseTimeout();
         controller360.handleKey(VK_7);
     });
-    
+
 
 
 });
-
-
