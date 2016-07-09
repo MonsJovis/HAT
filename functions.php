@@ -190,8 +190,6 @@ function mpat_enqueue_frontend_scripts()
     }
 
     wp_enqueue_style('mpat-frontend-metabox-video', get_template_directory_uri() . '/frontend/css/metabox-video.css');
-    wp_enqueue_script('mpat-metaboxes-video', get_template_directory_uri() . '/frontend/js/metaboxes/video.js', array('mpat-navigation'));
-    wp_enqueue_script('mpat-metaboxes-video', get_template_directory_uri() . '/frontend/js/metaboxes/video.js', array('mpat-navigation'));
 
     $contains_content_type = function($postMeta,$contenttype){
         if (!isset($postMeta)) $postMeta = array();
