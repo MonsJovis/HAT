@@ -3,6 +3,7 @@
 	'use strict';
 
 	var settings = {
+    'enabled': true,
 		'language': null,
 		'font-size': null,
 		'font-color': null,
@@ -196,12 +197,28 @@
 
 	function applySubtitleSettings() {
 
-		var languageBeforeSave = settings.language;
+		var settingsBefore = $.extend({}, settings);
 		$.each(settings, function(setting, index) {
-			settings[setting] = $('.subtitle-submenu-' + setting + ' .enabled').attr('data-value');
+      var $setting = $('.subtitle-submenu-' + setting + ' .enabled');
+      if ($setting.size()) {
+        if (setting == 'enabled') {
+          settings[setting] = parseInt($setting.attr('data-value'));
+        } else {
+			    settings[setting] = $setting.attr('data-value');
+        }
+      }
 		});
 
-		if (settings.language !== languageBeforeSave) {
+    if (settings.enabled !== settingsBefore.enabled) {
+      if (settings.enabled) {
+        setAllTimeouts();
+      } else {
+        $subtitleItem.hide();
+        clearAllTimeouts();
+      }
+    }
+
+		if (settings.language !== settingsBefore.language) {
 			var url;
 			$.each(subtitleFiles, function(key, subtitleFile) {
 				if (subtitleFile.language === settings.language) {
@@ -211,7 +228,7 @@
 			$subtitleItem.hide();
 			clearAllTimeouts();
 			loadSubtitleFile(url, function() {
-				if (languageBeforeSave === null) {
+				if (settingsBefore.language === null) {
 					readyToPlayVideo();
 				} else {
 					setAllTimeouts();

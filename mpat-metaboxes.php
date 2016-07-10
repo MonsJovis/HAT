@@ -905,6 +905,14 @@ function active($a,$b){
 
 function mpat_get_subtitle_settings($postData) {
   $settings = array(
+    'enabled' => array(
+      'label' => __('Enable/disable', 'mpat'),
+      'values' => array(
+        1 => __('Enabled', 'mpat'),
+        0 => __('Disabled', 'mpat')
+      ),
+      'default' => 1
+    ),
     'language' => array(
       'label' => __('Language', 'mpat'),
       'values' => array(),
