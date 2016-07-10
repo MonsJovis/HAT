@@ -156,6 +156,7 @@
 					$submenu = $('.subtitle-submenu-' + setting);
 				$menu.hide();
 				$('.focus', $menu).removeClass('focus');
+				$('.focus', $submenu).removeClass('focus');
 				$submenu.show().find('li').first().next().addClass('focus');
 			}
 		}
