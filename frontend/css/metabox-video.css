@@ -3,7 +3,7 @@
 	height: 100%;
 }
 
-.videoplayer-outer .subtitle-item {
+.videoplayer-outer .subtitle-item-outer {
 	position: absolute;
 	bottom: 60px;
 	left: 0;
@@ -12,6 +12,10 @@
 	text-align: center;
   line-height: 1.4em;
   z-index: 2;
+}
+.videoplayer-outer .subtitle-item {
+	display: inline;
+	position: relative;
 }
 
 .subtitle-menu-outer {
@@ -31,6 +35,9 @@
 }
 .subtitle-menu .focus {
 	background-color: #414141;
+}
+.subtitle-main-menu .back {
+	text-transform: uppercase;
 }
 .subtitle-submenu .icon-checked {
 	display: none;
