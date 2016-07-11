@@ -294,7 +294,6 @@
 
 	function onPlayStateChange() { // unsupported :-(state, error) {
 		try {
-			debug('state: ' + denotePlaystate(videoObj.playState, videoObj.error) + ' at: ' + (videoObj.playPosition | 0) + '/' + (videoObj.playTime | 0));
 			switch (videoObj.playState) {
 
 				case 1: // PLAYING
@@ -483,7 +482,7 @@
 	function debug(text) {
 		if (!jQuery) return;
 		var $debug = jQuery("#debugarea");
-		if (!$debug.length) return;
+		if (!$debug.size()) return;
 		$debug
 			.append(text + "\n")
 			.scrollTop($debug[0].scrollHeight);
