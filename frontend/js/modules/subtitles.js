@@ -203,8 +203,8 @@
 		$.each(settings, function(setting, index) {
       var $setting = $('.subtitle-submenu-' + setting + ' .enabled');
       if ($setting.size()) {
-        if (setting == 'enabled') {
-          settings[setting] = parseInt($setting.attr('data-value'));
+        if (setting === 'enabled') {
+          settings[setting] = parseInt($setting.attr('data-value'), 10);
         } else {
 			    settings[setting] = $setting.attr('data-value');
         }
@@ -216,6 +216,7 @@
         setAllTimeouts();
       } else {
         $subtitleItemOuter.hide();
+        $subtitleItem.html('');
         clearAllTimeouts();
       }
     }
@@ -228,6 +229,7 @@
 				}
 			});
 			$subtitleItemOuter.hide();
+      $subtitleItem.html('');
 			clearAllTimeouts();
 			loadSubtitleFile(url, function() {
 				if (settingsBefore.language === null) {
@@ -346,6 +348,7 @@
 			timeouts.push(setTimeout(function() {
 				if ($subtitleItem.data('subtitle') === subtitle.id) {
 					$subtitleItemOuter.hide();
+          $subtitleItem.html('');
 				}
 			}, hidettl));
 		}
